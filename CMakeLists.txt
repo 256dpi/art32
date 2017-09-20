@@ -12,7 +12,7 @@ include_directories(
         include/)
 
 set(SOURCE_FILES
-        include/smooth.h
+        include/art32/smooth.h
         src/smooth.c
         test/main/main.c)
 
