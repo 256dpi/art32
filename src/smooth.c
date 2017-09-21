@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "smooth.h"
+#include <art32/smooth.h>
 
 smooth_t *smooth_new(size_t num) {
   // allocate object
