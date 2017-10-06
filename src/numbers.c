@@ -21,3 +21,19 @@ long a32_map_l(long num, long in_min, long in_max, long out_min, long out_max) {
 int a32_map_i(int num, int in_min, int in_max, int out_min, int out_max) {
   return (int)a32_map_l(num, in_min, in_max, out_min, out_max);
 }
+
+double a32_safe_map_d(double num, double in_min, double in_max, double out_min, double out_max) {
+  return a32_constrain_d(a32_map_d(num, in_min, in_max, out_min, out_max), out_min, out_max);
+}
+
+float a32_safe_map_f(float num, float in_min, float in_max, float out_min, float out_max) {
+  return (float)a32_safe_map_d(num, in_min, in_max, out_min, out_max);
+}
+
+long a32_safe_map_l(long num, long in_min, long in_max, long out_min, long out_max) {
+  return a32_constrain_l(a32_map_l(num, in_min, in_max, out_min, out_max), out_min, out_max);
+}
+
+int a32_safe_map_i(int num, int in_min, int in_max, int out_min, int out_max) {
+  return (int)a32_safe_map_l(num, in_min, in_max, out_min, out_max);
+}

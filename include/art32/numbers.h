@@ -89,4 +89,52 @@ long a32_map_l(long num, long in_min, long in_max, long out_min, long out_max);
  */
 int a32_map_i(int num, int in_min, int in_max, int out_min, int out_max);
 
+/**
+ * Map number safely from one range to another.
+ *
+ * @param num - The number.
+ * @param in_min - The input lower range.
+ * @param in_max - The input upper range.
+ * @param out_min - The output lower range.
+ * @param out_max - The output upper range.
+ * @return The mapped and constrained value.
+ */
+double a32_safe_map_d(double num, double in_min, double in_max, double out_min, double out_max);
+
+/**
+ * Map number safely from one range to another.
+ *
+ * @param num - The number.
+ * @param in_min - The input lower range.
+ * @param in_max - The input upper range.
+ * @param out_min - The output lower range.
+ * @param out_max - The output upper range.
+ * @return The mapped and constrained value.
+ */
+double a32_safe_map_f(float num, float in_min, float in_max, float out_min, float out_max);
+
+/**
+ * Map number safely from one range to another.
+ *
+ * @param num - The number.
+ * @param in_min - The input lower range.
+ * @param in_max - The input upper range.
+ * @param out_min - The output lower range.
+ * @param out_max - The output upper range.
+ * @return The mapped and constrained value.
+ */
+long a32_safe_map_l(long num, long in_min, long in_max, long out_min, long out_max);
+
+/**
+ * Map number safely from one range to another.
+ *
+ * @param num - The number.
+ * @param in_min - The input lower range.
+ * @param in_max - The input upper range.
+ * @param out_min - The output lower range.
+ * @param out_max - The output upper range.
+ * @return The mapped and constrained value.
+ */
+int a32_safe_map_i(int num, int in_min, int in_max, int out_min, int out_max);
+
 #endif  // A32_NUMBERS_H
