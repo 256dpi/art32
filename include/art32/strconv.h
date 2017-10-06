@@ -27,7 +27,7 @@ const char* a32_l2str(long num);
  * @param str - The string.
  * @return The number.
  */
-double a32_str2d(const char * str);
+double a32_str2d(const char* str);
 
 /**
  * Returns the number from the string.
@@ -35,7 +35,7 @@ double a32_str2d(const char * str);
  * @param str - The string.
  * @return The number.
  */
-long a32_str2l(const char * str);
+long a32_str2l(const char* str);
 
 /**
  * Returns the number from the string.
@@ -43,6 +43,6 @@ long a32_str2l(const char * str);
  * @param str - The string.
  * @return The number.
  */
-int a32_str2i(const char * str);
+int a32_str2i(const char* str);
 
 #endif  // A32_STRCONV_H
