@@ -20,3 +20,7 @@ double a32_str2d(const char * str) {
 long a32_str2l(const char * str) {
   return strtol(str, NULL, 10);
 }
+
+int a32_str2i(const char * str) {
+  return (int)strtol(str, NULL, 10);
+}

@@ -37,4 +37,12 @@ double a32_str2d(const char * str);
  */
 long a32_str2l(const char * str);
 
+/**
+ * Returns the number from the string.
+ *
+ * @param str - The string.
+ * @return The number.
+ */
+int a32_str2i(const char * str);
+
 #endif  // STRCONV_H
