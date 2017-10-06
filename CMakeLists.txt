@@ -13,7 +13,9 @@ include_directories(
 
 set(SOURCE_FILES
         include/art32/smooth.h
+        include/art32/strconv.h
         src/smooth.c
+        src/strconv.c
         test/main/main.c)
 
 add_library(art32 ${SOURCE_FILES})
