@@ -9,7 +9,7 @@
  * @param v - The number.
  * @return Pointer to string.
  */
-const char* a32_dtostr(double num);
+const char* a32_d2str(double num);
 
 /**
  * Returns a string containing the value.
@@ -19,6 +19,22 @@ const char* a32_dtostr(double num);
  * @param v - The number.
  * @return Pointer to string.
  */
-const char* a32_ltostr(long num);
+const char* a32_l2str(long num);
+
+/**
+ * Returns the number from the string.
+ *
+ * @param str - The string.
+ * @return The number.
+ */
+double a32_str2d(const char * str);
+
+/**
+ * Returns the number from the string.
+ *
+ * @param str - The string.
+ * @return The number.
+ */
+long a32_str2l(const char * str);
 
 #endif  // STRCONV_H

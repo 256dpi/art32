@@ -10,6 +10,8 @@ void app_main() {
   ESP_LOGI("smooth", "%f (10.0000)", a32_smooth_update(smooth, 15));
 
   // test strconv
-  ESP_LOGI("strconv", "dtostr: %s (10.0000)", a32_dtostr(10.0));
-  ESP_LOGI("strconv", "ltostr: %s (10)", a32_ltostr(10));
+  ESP_LOGI("strconv", "d2str: %s (10.0000)", a32_d2str(10.0));
+  ESP_LOGI("strconv", "l2str: %s (10)", a32_l2str(10));
+  ESP_LOGI("strconv", "str2l: %ld (10)", a32_str2l("10"));
+  ESP_LOGI("strconv", "str2d: %.4f (10.0000)", a32_str2d("10.0"));
 }
