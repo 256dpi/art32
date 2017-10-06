@@ -1,5 +1,5 @@
-#ifndef STRCONV_H
-#define STRCONV_H
+#ifndef A32_STRCONV_H
+#define A32_STRCONV_H
 
 /**
  * Returns a string containing the value with 4 decimals.
@@ -45,4 +45,4 @@ long a32_str2l(const char * str);
  */
 int a32_str2i(const char * str);
 
-#endif  // STRCONV_H
+#endif  // A32_STRCONV_H

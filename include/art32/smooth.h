@@ -1,5 +1,5 @@
-#ifndef SMOOTH_H
-#define SMOOTH_H
+#ifndef A32_SMOOTH_H
+#define A32_SMOOTH_H
 
 #include <stddef.h>
 
@@ -38,4 +38,4 @@ double a32_smooth_update(a32_smooth_t *s, double v);
  */
 void a32_smooth_free(a32_smooth_t *s);
 
-#endif  // SMOOTH_H
+#endif  // A32_SMOOTH_H
