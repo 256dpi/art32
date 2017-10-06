@@ -12,7 +12,7 @@ typedef struct {
   size_t index;
   double total;
   size_t count;
-} smooth_t;
+} a32_smooth_t;
 
 /**
  * Allocate a new smooth object.
@@ -20,7 +20,7 @@ typedef struct {
  * @param num - The stored history of values.
  * @return Pointer to a new smooth object.
  */
-smooth_t *smooth_new(size_t num);
+a32_smooth_t *a32_smooth_new(size_t num);
 
 /**
  * Smooth the supplied value.
@@ -29,13 +29,13 @@ smooth_t *smooth_new(size_t num);
  * @param v - The value to be smoothed.
  * @return The smoothed value.
  */
-double smooth_update(smooth_t *s, double v);
+double a32_smooth_update(a32_smooth_t *s, double v);
 
 /**
  * Free a previously allocated smooth object.
  *
  * @param s - The smooth object to be freed.
  */
-void smooth_free(smooth_t *s);
+void a32_smooth_free(a32_smooth_t *s);
 
 #endif  // SMOOTH_H

@@ -3,10 +3,10 @@
 
 #include <art32/smooth.h>
 
-smooth_t *smooth_new(size_t num) {
+a32_smooth_t *a32_smooth_new(size_t num) {
   // allocate object
-  smooth_t *s = (smooth_t *)malloc(sizeof(smooth_t));
-  memset(s, 0, sizeof(smooth_t));
+  a32_smooth_t *s = (a32_smooth_t *)malloc(sizeof(a32_smooth_t));
+  memset(s, 0, sizeof(a32_smooth_t));
 
   // allocate history
   s->values = calloc(sizeof(double), num);
@@ -15,7 +15,7 @@ smooth_t *smooth_new(size_t num) {
   return s;
 }
 
-double smooth_update(smooth_t *s, double v) {
+double a32_smooth_update(a32_smooth_t *s, double v) {
   // subtract last reading
   s->total -= s->values[s->index];
 
@@ -42,7 +42,7 @@ double smooth_update(smooth_t *s, double v) {
   return s->total / (double)s->count;
 }
 
-void smooth_free(smooth_t* s) {
+void smooth_free(a32_smooth_t *s) {
   // free history
   free(s->values);
 
