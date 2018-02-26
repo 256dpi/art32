@@ -63,7 +63,7 @@ double a32_map_d(double num, double in_min, double in_max, double out_min, doubl
  * @param out_max - The output upper range.
  * @return The mapped value.
  */
-double a32_map_f(float num, float in_min, float in_max, float out_min, float out_max);
+float a32_map_f(float num, float in_min, float in_max, float out_min, float out_max);
 
 /**
  * Map number from one range to another.
