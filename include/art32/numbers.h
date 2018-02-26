@@ -111,7 +111,7 @@ double a32_safe_map_d(double num, double in_min, double in_max, double out_min, 
  * @param out_max - The output upper range.
  * @return The mapped and constrained value.
  */
-double a32_safe_map_f(float num, float in_min, float in_max, float out_min, float out_max);
+float a32_safe_map_f(float num, float in_min, float in_max, float out_min, float out_max);
 
 /**
  * Map number safely from one range to another.
