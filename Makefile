@@ -6,9 +6,7 @@ ifeq ($(UNAME), Darwin)
 XTENSA_TOOLCHAIN := "xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz"
 endif
 
-fmt:
-	clang-format -i ./src/*.c ./include/art32/*.h -style="{BasedOnStyle: Google, ColumnLimit: 120}"
-	clang-format -i ./test/main/*.c -style="{BasedOnStyle: Google, ColumnLimit: 120}"
+ESP_IDF_VERSION := "8bca703467be0d5e43e2a3dce2ca7727ca826474" # 2.1.1
 
 test/xtensa-esp32-elf:
 	wget https://dl.espressif.com/dl/$(XTENSA_TOOLCHAIN)
@@ -16,13 +14,13 @@ test/xtensa-esp32-elf:
 	rm *.tar.gz
 
 test/esp-idf:
-	git clone --recursive --depth 1 https://github.com/espressif/esp-idf.git test/esp-idf
+	git clone --recursive  https://github.com/espressif/esp-idf.git test/esp-idf
+	cd test/esp-idf; git fetch; git checkout $(ESP_IDF_VERSION)
+	cd test/esp-idf; git submodule update --recursive
 
-erase: test/xtensa-esp32-elf test/esp-idf
-	export PATH=$(shell pwd)/test/xtensa-esp32-elf/bin:$$PATH; cd ./test; make erase_flash
-
-clean: test/xtensa-esp32-elf test/esp-idf
-	export PATH=$(shell pwd)/test/xtensa-esp32-elf/bin:$$PATH; cd ./test; make clean
+update:
+	cd test/esp-idf; git fetch; git checkout $(ESP_IDF_VERSION)
+	cd test/esp-idf; git submodule update --recursive
 
 build: test/xtensa-esp32-elf test/esp-idf
 	export PATH=$(shell pwd)/test/xtensa-esp32-elf/bin:$$PATH; cd ./test; make
@@ -30,8 +28,18 @@ build: test/xtensa-esp32-elf test/esp-idf
 flash: test/xtensa-esp32-elf test/esp-idf
 	export PATH=$(shell pwd)/test/xtensa-esp32-elf/bin:$$PATH; cd ./test; make flash
 
+erase: test/xtensa-esp32-elf test/esp-idf
+	export PATH=$(shell pwd)/test/xtensa-esp32-elf/bin:$$PATH; cd ./test; make erase_flash
+
+clean: test/xtensa-esp32-elf test/esp-idf
+	export PATH=$(shell pwd)/test/xtensa-esp32-elf/bin:$$PATH; cd ./test; make clean
+
 monitor: test/xtensa-esp32-elf test/esp-idf
 	@clear
 	miniterm.py /dev/cu.SLAB_USBtoUART 115200 --rts 0 --dtr 0 --raw --exit-char 99
 
 run: build flash monitor
+
+fmt:
+	clang-format -i ./src/*.c ./include/art32/*.h -style="{BasedOnStyle: Google, ColumnLimit: 120}"
+	clang-format -i ./test/main/*.c -style="{BasedOnStyle: Google, ColumnLimit: 120}"
