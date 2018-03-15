@@ -42,7 +42,7 @@ double a32_smooth_update(a32_smooth_t *s, double v) {
   return s->total / (double)s->count;
 }
 
-void smooth_free(a32_smooth_t *s) {
+void a32_smooth_free(a32_smooth_t *s) {
   // free history
   free(s->values);
 
