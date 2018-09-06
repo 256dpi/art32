@@ -6,7 +6,7 @@
  *
  * Note: The returned pointer is altered on the next call.
  *
- * @param v - The number.
+ * @param v The number.
  * @return Pointer to string.
  */
 const char* a32_d2str(double num);
@@ -16,7 +16,7 @@ const char* a32_d2str(double num);
  *
  * Note: The returned pointer is altered on the next call.
  *
- * @param v - The number.
+ * @param v The number.
  * @return Pointer to string.
  */
 const char* a32_f2str(float num);
@@ -26,7 +26,7 @@ const char* a32_f2str(float num);
  *
  * Note: The returned pointer is altered on the next call.
  *
- * @param v - The number.
+ * @param v The number.
  * @return Pointer to string.
  */
 const char* a32_l2str(long num);
@@ -36,7 +36,7 @@ const char* a32_l2str(long num);
  *
  * Note: The returned pointer is altered on the next call.
  *
- * @param v - The number.
+ * @param v The number.
  * @return Pointer to string.
  */
 const char* a32_i2str(int num);
@@ -44,7 +44,7 @@ const char* a32_i2str(int num);
 /**
  * Returns the number from the string.
  *
- * @param str - The string.
+ * @param str The string.
  * @return The number.
  */
 double a32_str2d(const char* str);
@@ -52,7 +52,7 @@ double a32_str2d(const char* str);
 /**
  * Returns the number from the string.
  *
- * @param str - The string.
+ * @param str The string.
  * @return The number.
  */
 float a32_str2f(const char* str);
@@ -60,7 +60,7 @@ float a32_str2f(const char* str);
 /**
  * Returns the number from the string.
  *
- * @param str - The string.
+ * @param str The string.
  * @return The number.
  */
 long a32_str2l(const char* str);
@@ -68,7 +68,7 @@ long a32_str2l(const char* str);
 /**
  * Returns the number from the string.
  *
- * @param str - The string.
+ * @param str The string.
  * @return The number.
  */
 int a32_str2i(const char* str);
