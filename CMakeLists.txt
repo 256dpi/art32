@@ -12,9 +12,11 @@ include_directories(
         include/)
 
 set(SOURCE_FILES
+        include/art32/motion.h
         include/art32/numbers.h
         include/art32/smooth.h
         include/art32/strconv.h
+        src/motion.c
         src/numbers.c
         src/smooth.c
         src/strconv.c
