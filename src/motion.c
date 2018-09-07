@@ -42,16 +42,7 @@ static void motion_calculate(a32_motion_t *m, double target, uint32_t delta) {
   }
 }
 
-void a32_motion_init(a32_motion_t *m, double max_velocity, double max_acceleration) {
-  // reset object
-  memset(m, 0, sizeof(a32_motion_t));
-
-  // set initial state
-  m->max_velocity = max_velocity;
-  m->max_acceleration = max_acceleration;
-}
-
-void a32_moption_update(a32_motion_t *m, double target, uint32_t time) {
+void a32_motion_update(a32_motion_t *m, double target, uint32_t time) {
   // copy state
   m->last_position = m->position;
   m->last_velocity = m->velocity;

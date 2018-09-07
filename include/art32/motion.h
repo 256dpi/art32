@@ -10,11 +10,15 @@
 typedef struct {
   /**
    * The configured maximum velocity in m/t.
+   *
+   * @note: Must be configured before calling update.
    */
   double max_velocity;
 
   /**
    * The configured maximum acceleration in m/t^2.
+   *
+   * @note: Must be configured before calling update.
    */
   double max_acceleration;
 
@@ -51,15 +55,6 @@ typedef struct {
 } a32_motion_t;
 
 /**
- * Initialize a motion object.
- *
- * @param m The motion object.
- * @param max_velocity Max velocity in m/t.
- * @param max_acceleration Max acceleration in m/t^2.
- */
-void a32_motion_init(a32_motion_t *m, double max_velocity, double max_acceleration);
-
-/**
  * Update the motion profile.
  *
  * The algorithm will calculate the next position to approach in order to reach the provided target.
@@ -68,6 +63,6 @@ void a32_motion_init(a32_motion_t *m, double max_velocity, double max_accelerati
  * @param target The target to approach.
  * @param time The current time.
  */
-void a32_moption_update(a32_motion_t *m, double target, uint32_t time);
+void a32_motion_update(a32_motion_t *m, double target, uint32_t time);
 
 #endif  // A32_MOTION_H

@@ -22,16 +22,17 @@ void app_main() {
   ESP_LOGI("strconv", "str2i: %d (10)", a32_str2i("10"));
 
   // test motion
-  a32_motion_t motion;
-  a32_motion_init(&motion, 10, 1);
-  a32_moption_update(&motion, 100, 0);
+  a32_motion_t motion = {0};
+  motion.max_velocity = 10;
+  motion.max_acceleration = 1;
+  a32_motion_update(&motion, 100, 0);
   ESP_LOGI("motion", "motion: %s (0)", a32_d2str(motion.position));
-  a32_moption_update(&motion, 100, 1);
+  a32_motion_update(&motion, 100, 1);
   ESP_LOGI("motion", "motion: %s (0)", a32_d2str(motion.position));
-  a32_moption_update(&motion, 100, 2);
+  a32_motion_update(&motion, 100, 2);
   ESP_LOGI("motion", "motion: %s (1)", a32_d2str(motion.position));
-  a32_moption_update(&motion, 100, 3);
+  a32_motion_update(&motion, 100, 3);
   ESP_LOGI("motion", "motion: %s (3)", a32_d2str(motion.position));
-  a32_moption_update(&motion, 100, 4);
+  a32_motion_update(&motion, 100, 4);
   ESP_LOGI("motion", "motion: %s (6)", a32_d2str(motion.position));
 }
