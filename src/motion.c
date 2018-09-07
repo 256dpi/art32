@@ -42,19 +42,10 @@ static void motion_calculate(a32_motion_t *m, double target, uint32_t delta) {
   }
 }
 
-void a32_motion_update(a32_motion_t *m, double target, uint32_t time) {
+void a32_motion_update(a32_motion_t *m, double target, uint32_t delta) {
   // copy state
   m->last_position = m->position;
   m->last_velocity = m->velocity;
-
-  // save first timestamp and return
-  if (m->last_update == 0) {
-    m->last_update = time;
-    return;
-  }
-
-  // calculate time delta
-  uint32_t delta = (time - m->last_update);
 
   // calculate motion profile
   motion_calculate(m, target, delta);
@@ -70,7 +61,4 @@ void a32_motion_update(a32_motion_t *m, double target, uint32_t time) {
   if (m->acceleration != m->acceleration) {
     m->acceleration = 0;
   }
-
-  // save last update
-  m->last_update = time;
 }

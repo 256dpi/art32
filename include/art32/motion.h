@@ -47,11 +47,6 @@ typedef struct {
    * The current acceleration.
    */
   double acceleration;
-
-  /**
-   * The time of the last update.
-   */
-  uint32_t last_update;
 } a32_motion_t;
 
 /**
@@ -61,8 +56,8 @@ typedef struct {
  *
  * @param m The motion object.
  * @param target The target to approach.
- * @param time The current time.
+ * @param delta The time delta from now to the position to calculate.
  */
-void a32_motion_update(a32_motion_t *m, double target, uint32_t time);
+void a32_motion_update(a32_motion_t *m, double target, uint32_t delta);
 
 #endif  // A32_MOTION_H
