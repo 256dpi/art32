@@ -6,9 +6,9 @@
 void app_main() {
   // test smooth
   a32_smooth_t* smooth = a32_smooth_new(10);
-  a32_smooth_update(smooth, 5);
-  a32_smooth_update(smooth, 10);
-  ESP_LOGI("smooth", "%f (10.0000)", a32_smooth_update(smooth, 15));
+  ESP_LOGI("smooth", "%f %f %f (5.0000, 5.0000, 5.0000)", a32_smooth_update(smooth, 5), smooth->min, smooth->max);
+  ESP_LOGI("smooth", "%f %f %f (7.5000, 5.0000, 10.0000)", a32_smooth_update(smooth, 10), smooth->min, smooth->max);
+  ESP_LOGI("smooth", "%f %f %f (10.0000, 5.0000, 15.0000)", a32_smooth_update(smooth, 15), smooth->min, smooth->max);
   a32_smooth_free(smooth);
 
   // test strconv

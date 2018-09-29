@@ -12,6 +12,8 @@ typedef struct {
   size_t index;
   double total;
   size_t count;
+  double min;
+  double max;
 } a32_smooth_t;
 
 /**
@@ -23,9 +25,9 @@ typedef struct {
 a32_smooth_t *a32_smooth_new(size_t num);
 
 /**
- * Smooth the supplied value.
+ * Adds the provided value to the history and returns the mean value.
  *
- * @param s The to be used smooth object.
+ * @param s The smooth object to be used.
  * @param v The value to be smoothed.
  * @return The smoothed value.
  */
