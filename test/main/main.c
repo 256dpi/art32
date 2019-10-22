@@ -33,4 +33,6 @@ void app_main() {
   ESP_LOGI("motion", "motion: %s (10)", a32_d2str(motion.position));
   a32_motion_update(&motion, 100, 1);
   ESP_LOGI("motion", "motion: %s (15)", a32_d2str(motion.position));
+
+  // TODO: Test matrix.
 }
