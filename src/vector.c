@@ -16,7 +16,7 @@ a32_vector_t a32_vector_new(size_t length) {
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
   // create vector view
-  a32_vector_t vector = {.len = length, .data = vec.data + length};
+  a32_vector_t vector = {.len = length, .data = vec.data + offset};
 
   return vector;
 }
