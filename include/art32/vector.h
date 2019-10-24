@@ -20,6 +20,17 @@ typedef struct {
 a32_vector_t a32_vector_new(size_t length);
 
 /**
+ * Creates a view of another vector without copying.
+ *
+ * @param vec The vector.
+ * @param offset The offset.
+ * @param length The length.
+ * @return The vector view.
+ */
+
+a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length);
+
+/**
  * Frees a vector.
  *
  * @param vec The vector.

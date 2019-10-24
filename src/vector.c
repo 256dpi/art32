@@ -14,6 +14,13 @@ a32_vector_t a32_vector_new(size_t length) {
   return vector;
 }
 
+a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
+  // create vector view
+  a32_vector_t vector = {.len = length, .data = vec.data + length};
+
+  return vector;
+}
+
 void a32_vector_free(a32_vector_t vec) {
   // free data
   free(vec.data);
