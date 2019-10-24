@@ -43,6 +43,21 @@ float a32_vector_max(a32_vector_t vec);
 float a32_vector_min(a32_vector_t vec);
 
 /**
+ * Calculates the magnitude of the vector.
+ *
+ * @param vec The vector.
+ * @return The magnitude.
+ */
+float a32_vector_mag(a32_vector_t vec);
+
+/**
+ * Normalizes the vector to be a unit vector.
+ *
+ * @param vec The vector.
+ */
+void a32_vector_norm(a32_vector_t vec);
+
+/**
  * Prints the vector using `printf`.
  *
  * @param vec The vector.

@@ -1,5 +1,6 @@
 #include <art32/vector.h>
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,6 +45,27 @@ float a32_vector_min(a32_vector_t vec) {
   }
 
   return min;
+}
+
+float a32_vector_mag(a32_vector_t vec) {
+  // prepare sum
+  float sum = 0;
+
+  // add products
+  for (size_t i = 0; i < vec.len; i++) {
+    sum += (vec.data[i] * vec.data[i]);
+  }
+
+  return sqrtf(sum);
+}
+
+void a32_vector_norm(a32_vector_t vec) {
+  float m = a32_vector_mag(vec);
+  if (m > 0) {
+    for (size_t i = 0; i < vec.len; i++) {
+      vec.data[i] = vec.data[i] / m;
+    }
+  }
 }
 
 void a32_vector_print(a32_vector_t vec) {
