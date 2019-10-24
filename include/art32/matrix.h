@@ -36,6 +36,24 @@ void a32_matrix_free(a32_matrix_t);
 a32_matrix_t a32_matrix_copy(a32_matrix_t mat);
 
 /**
+ * Set row from vector.
+ *
+ * @param mat The matrix.
+ * @param row The row.
+ * @param vec The vector.
+ */
+void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec);
+
+/**
+ * Set column from vector.
+ *
+ * @param mat The matrix.
+ * @param col The column.
+ * @param vec The vector.
+ */
+void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec);
+
+/**
  * Transpose matrix (flip over its diagonal).
  *
  * @param mat The matrix.

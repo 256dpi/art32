@@ -158,6 +158,18 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
   return out;
 }
 
+void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
+  for (size_t i = 0; i < vec.len; i++) {
+    mat.data[row][i] = vec.data[i];
+  }
+}
+
+void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
+  for (size_t i = 0; i < vec.len; i++) {
+    mat.data[i][col] = vec.data[i];
+  }
+}
+
 a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   // allocate
   a32_matrix_t out = a32_matrix_new(mat.cols, mat.rows);

@@ -1,7 +1,7 @@
 #include <art32/vector.h>
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 a32_vector_t a32_vector_new(size_t length) {
   // create vector
