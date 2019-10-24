@@ -10,52 +10,6 @@
 
 #define TINY 1.0e-20f;
 
-static a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
-
-  // transpose data
-  for (size_t i = 0; i < mat.rows; i++) {
-    for (size_t j = 0; j < mat.cols; j++) {
-      out.data[i][j] = mat.data[i][j];
-    }
-  }
-
-  return out;
-}
-
-static a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat.cols, mat.rows);
-
-  // transpose data
-  for (size_t i = 0; i < mat.rows; i++) {
-    for (size_t j = 0; j < mat.cols; j++) {
-      out.data[j][i] = mat.data[i][j];
-    }
-  }
-
-  return out;
-}
-
-static a32_matrix_t a32_matrix_product(a32_matrix_t mat, a32_matrix_t in) {
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat.rows, in.cols);
-
-  // product data
-  for (size_t i = 0; i < mat.rows; i++) {
-    for (size_t j = 0; j < in.cols; j++) {
-      float sum = 0;
-      for (size_t k = 0; k < mat.cols; k++) {
-        sum += mat.data[i][k] * in.data[k][j];
-      }
-      out.data[i][j] = sum;
-    }
-  }
-
-  return out;
-}
-
 static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   size_t i_max = 0;
   float big, dum, sum, temp, d;
@@ -165,7 +119,78 @@ static void a32_matrix_lu_back_substitute(a32_matrix_t mat, a32_vector_t index, 
   }
 }
 
-static a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
+a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
+  a32_matrix_t matrix = {
+      .rows = rows,
+      .cols = cols,
+      .data = (float **)calloc(sizeof(float *), rows),
+  };
+
+  // allocate rows
+  for (size_t i = 0; i < rows; i++) {
+    matrix.data[i] = (float *)calloc(sizeof(float), cols);
+  }
+
+  return matrix;
+}
+
+void a32_matrix_free(a32_matrix_t matrix) {
+  // free cols
+  for (size_t i = 0; i < matrix.rows; i++) {
+    free(matrix.data[i]);
+  }
+
+  // free rows
+  free(matrix.data);
+}
+
+a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
+  // allocate
+  a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
+
+  // transpose data
+  for (size_t i = 0; i < mat.rows; i++) {
+    for (size_t j = 0; j < mat.cols; j++) {
+      out.data[i][j] = mat.data[i][j];
+    }
+  }
+
+  return out;
+}
+
+a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
+  // allocate
+  a32_matrix_t out = a32_matrix_new(mat.cols, mat.rows);
+
+  // transpose data
+  for (size_t i = 0; i < mat.rows; i++) {
+    for (size_t j = 0; j < mat.cols; j++) {
+      out.data[j][i] = mat.data[i][j];
+    }
+  }
+
+  return out;
+}
+
+a32_matrix_t a32_matrix_product(a32_matrix_t mat1, a32_matrix_t mat2) {
+  // allocate
+  a32_matrix_t out = a32_matrix_new(mat1.rows, mat2.cols);
+
+  // product data
+  for (size_t i = 0; i < mat1.rows; i++) {
+    for (size_t j = 0; j < mat2.cols; j++) {
+      float sum = 0;
+      for (size_t k = 0; k < mat1.cols; k++) {
+        sum += mat1.data[i][k] * mat2.data[k][j];
+      }
+      out.data[i][j] = sum;
+    }
+  }
+
+  return out;
+}
+
+a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   // copy
   a32_matrix_t out = a32_matrix_copy(mat);
   a32_matrix_t temp = a32_matrix_copy(mat);
@@ -194,31 +219,6 @@ static a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   a32_matrix_free(temp);
 
   return out;
-}
-
-a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
-  a32_matrix_t matrix = {
-      .rows = rows,
-      .cols = cols,
-      .data = (float **)calloc(sizeof(float *), rows),
-  };
-
-  // allocate rows
-  for (size_t i = 0; i < rows; i++) {
-    matrix.data[i] = (float *)calloc(sizeof(float), cols);
-  }
-
-  return matrix;
-}
-
-void a32_matrix_free(a32_matrix_t matrix) {
-  // free cols
-  for (size_t i = 0; i < matrix.rows; i++) {
-    free(matrix.data[i]);
-  }
-
-  // free rows
-  free(matrix.data);
 }
 
 a32_matrix_t a32_matrix_right_pseudo_inverse(a32_matrix_t matrix) {
