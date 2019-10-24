@@ -1,6 +1,7 @@
 #include <art32/vector.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 
 a32_vector_t a32_vector_new(size_t length) {
   // create vector
@@ -10,6 +11,11 @@ a32_vector_t a32_vector_new(size_t length) {
   };
 
   return vector;
+}
+
+void a32_vector_free(a32_vector_t vec) {
+  // free data
+  free(vec.data);
 }
 
 float a32_vector_max(a32_vector_t vec) {
@@ -40,7 +46,12 @@ float a32_vector_min(a32_vector_t vec) {
   return min;
 }
 
-void a32_vector_free(a32_vector_t vec) {
-  // free data
-  free(vec.data);
+void a32_vector_print(a32_vector_t vec) {
+  printf("[");
+
+  for (size_t i = 0; i < vec.len; i++) {
+    printf("%+.3f ", vec.data[i]);
+  }
+
+  printf("]\n");
 }

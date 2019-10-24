@@ -42,4 +42,11 @@ float a32_vector_max(a32_vector_t vec);
  */
 float a32_vector_min(a32_vector_t vec);
 
+/**
+ * Prints the vector using `printf`.
+ *
+ * @param vec The vector.
+ */
+void a32_vector_print(a32_vector_t vec);
+
 #endif  // A32_VECTOR_H
