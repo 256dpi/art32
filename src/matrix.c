@@ -210,12 +210,14 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 
     a32_matrix_lu_back_substitute(temp, index, col);
 
-    for (size_t i = 0; i < mat.rows; i++) out.data[i][j] = col.data[i];
+    for (size_t i = 0; i < mat.rows; i++) {
+      out.data[i][j] = col.data[i];
+    }
   }
 
   // free intermediaries
-  a32_vector_free(index);
   a32_vector_free(col);
+  a32_vector_free(index);
   a32_matrix_free(temp);
 
   return out;
@@ -235,9 +237,9 @@ a32_matrix_t a32_matrix_right_pseudo_inverse(a32_matrix_t matrix) {
   a32_matrix_t final = a32_matrix_product(transpose, inverse);
 
   // free intermediaries
-  a32_matrix_free(transpose);
-  a32_matrix_free(product);
   a32_matrix_free(inverse);
+  a32_matrix_free(product);
+  a32_matrix_free(transpose);
 
   return final;
 }
