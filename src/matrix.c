@@ -119,25 +119,6 @@ static void a32_matrix_lu_back_substitute(a32_matrix_t mat, a32_vector_t index, 
   }
 }
 
-a32_matrix_t a32_matrix_use(double *data, size_t rows, size_t cols) {
-  // prepare matrix
-  a32_matrix_t matrix = {
-      .rows = rows,
-      .cols = cols,
-      .data = calloc(sizeof(double *), rows),
-  };
-
-  // allocate rows and copy values
-  for (size_t r = 0; r < rows; r++) {
-    matrix.data[r] = calloc(sizeof(double), cols);
-    for (size_t c = 0; c < cols; c++) {
-      matrix.data[r][c] = data[r * cols + c];
-    }
-  }
-
-  return matrix;
-}
-
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   // prepare matrix
   a32_matrix_t matrix = {
@@ -147,17 +128,31 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   };
 
   // allocate rows
-  for (size_t i = 0; i < rows; i++) {
-    matrix.data[i] = calloc(sizeof(double), cols);
+  for (size_t r = 0; r < rows; r++) {
+    matrix.data[r] = calloc(sizeof(double), cols);
   }
 
   return matrix;
 }
 
+a32_matrix_t a32_matrix_use(const double *data, size_t rows, size_t cols) {
+  // allocate
+  a32_matrix_t mat = a32_matrix_new(rows, cols);
+
+  // allocate rows and copy values
+  for (size_t r = 0; r < rows; r++) {
+    for (size_t c = 0; c < cols; c++) {
+      mat.data[r][c] = data[r * cols + c];
+    }
+  }
+
+  return mat;
+}
+
 void a32_matrix_free(a32_matrix_t mat) {
   // free cols
-  for (size_t i = 0; i < mat.rows; i++) {
-    free(mat.data[i]);
+  for (size_t r = 0; r < mat.rows; r++) {
+    free(mat.data[r]);
   }
 
   // free rows
@@ -168,10 +163,10 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
   // allocate
   a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
 
-  // transpose data
-  for (size_t i = 0; i < mat.rows; i++) {
-    for (size_t j = 0; j < mat.cols; j++) {
-      out.data[i][j] = mat.data[i][j];
+  // copy data
+  for (size_t r = 0; r < mat.rows; r++) {
+    for (size_t c = 0; c < mat.cols; c++) {
+      out.data[r][c] = mat.data[r][c];
     }
   }
 
@@ -179,14 +174,14 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
 }
 
 void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
-  for (size_t i = 0; i < vec.len; i++) {
-    mat.data[row][i] = vec.data[i];
+  for (size_t c = 0; c < vec.len; c++) {
+    mat.data[row][c] = vec.data[c];
   }
 }
 
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
-  for (size_t i = 0; i < vec.len; i++) {
-    mat.data[i][col] = vec.data[i];
+  for (size_t r = 0; r < vec.len; r++) {
+    mat.data[r][col] = vec.data[r];
   }
 }
 
@@ -195,9 +190,9 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   a32_matrix_t out = a32_matrix_new(mat.cols, mat.rows);
 
   // transpose data
-  for (size_t i = 0; i < mat.rows; i++) {
-    for (size_t j = 0; j < mat.cols; j++) {
-      out.data[j][i] = mat.data[i][j];
+  for (size_t r = 0; r < mat.rows; r++) {
+    for (size_t c = 0; c < mat.cols; c++) {
+      out.data[c][r] = mat.data[r][c];
     }
   }
 
@@ -209,13 +204,13 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   a32_matrix_t out = a32_matrix_new(mat1.rows, mat2.cols);
 
   // product data
-  for (size_t i = 0; i < mat1.rows; i++) {
-    for (size_t j = 0; j < mat2.cols; j++) {
+  for (size_t r = 0; r < mat1.rows; r++) {
+    for (size_t c = 0; c < mat2.cols; c++) {
       double sum = 0;
       for (size_t k = 0; k < mat1.cols; k++) {
-        sum += mat1.data[i][k] * mat2.data[k][j];
+        sum += mat1.data[r][k] * mat2.data[k][c];
       }
-      out.data[i][j] = sum;
+      out.data[r][c] = sum;
     }
   }
 
@@ -331,25 +326,19 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
 
   // construct final matrix rows
   for (size_t fr = 0; fr < final.rows; fr++) {
-    // add zero row if column was zero
-    if (col_map[fr] == SIZE_MAX) {
-      for (size_t mc = 0; mc < mat.cols; mc++) {
-        final.data[fr][mc] = 0;
-      }
-      continue;
-    }
-
     // construct temporary matrix columns
     for (size_t fc = 0; fc < final.cols; fc++) {
-      // add zero column if row was zero
-      if (row_map[fc] == SIZE_MAX) {
+      // get original indexes
+      size_t or = col_map[fr];
+      size_t oc = row_map[fc];
+
+      // set zero value if row or column was zero
+      if (or == SIZE_MAX || oc == SIZE_MAX) {
         final.data[fr][fc] = 0;
         continue;
       }
 
       // copy value
-      size_t or = col_map[fr];
-      size_t oc = row_map[fc];
       final.data[fr][fc] = output.data[or][oc];
     }
   }

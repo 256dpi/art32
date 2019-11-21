@@ -1,6 +1,14 @@
 import numpy as np
 
 print(np.linalg.pinv(np.array([
+    [0.1, 0.2],
+    [0.3, 0.4],
+])))
+
+# [[-20.  10.]
+#  [ 15.  -5.]]
+
+print(np.linalg.pinv(np.array([
     [0.1, 0.2, 0.1],
     [0.3, 0.4, 0.1],
 ])))
