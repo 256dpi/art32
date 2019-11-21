@@ -54,7 +54,7 @@ void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec);
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec);
 
 /**
- * Transpose matrix (flip over its diagonal).
+ * Transpose matrix, flip over its diagonal.
  *
  * @param mat The matrix.
  * @return The transposed matrix.
@@ -68,14 +68,14 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat);
  * @param mat2 The second matrix.
  * @return The calculate matrix.
  */
-a32_matrix_t a32_matrix_product(a32_matrix_t mat1, a32_matrix_t mat2);
+a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2);
 
 /**
  * Calculates the right pseudo inverse.
  *
  * @return The calculate matrix.
  */
-a32_matrix_t a32_matrix_right_pseudo_inverse(a32_matrix_t);
+a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t matrix);
 
 /**
  *  Prints the matrix using `printf`.

@@ -120,6 +120,7 @@ static void a32_matrix_lu_back_substitute(a32_matrix_t mat, a32_vector_t index, 
 }
 
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
+  // prepare matrix
   a32_matrix_t matrix = {
       .rows = rows,
       .cols = cols,
@@ -184,7 +185,7 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   return out;
 }
 
-a32_matrix_t a32_matrix_product(a32_matrix_t mat1, a32_matrix_t mat2) {
+a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   // allocate
   a32_matrix_t out = a32_matrix_new(mat1.rows, mat2.cols);
 
@@ -235,18 +236,18 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   return out;
 }
 
-a32_matrix_t a32_matrix_right_pseudo_inverse(a32_matrix_t matrix) {
+a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t matrix) {
   // transpose
   a32_matrix_t transpose = a32_matrix_transpose(matrix);
 
   // product
-  a32_matrix_t product = a32_matrix_product(matrix, transpose);
+  a32_matrix_t product = a32_matrix_multiply(matrix, transpose);
 
   // invert
   a32_matrix_t inverse = a32_matrix_invert(product);
 
   // final transpose
-  a32_matrix_t final = a32_matrix_product(transpose, inverse);
+  a32_matrix_t final = a32_matrix_multiply(transpose, inverse);
 
   // free intermediaries
   a32_matrix_free(inverse);
