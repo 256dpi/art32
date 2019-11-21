@@ -58,4 +58,16 @@ void app_main() {
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
+
+  // TODO: Finding the left pseudo inverse is not supported.
+
+  // test matrix 3
+  double values3[5][3] = {
+      {0.0, 0.0, 0.0}, {0.1, 0.0, 0.3}, {0.2, 0.0, 0.4}, {0.0, 0.0, 0.0}, {0.1, 0.0, 0.1},
+  };
+  mat = a32_matrix_use((double*)values3, 5, 3);
+  a32_matrix_print(mat);
+  ESP_LOGI("matrix", "---");
+  pinv = a32_matrix_pseudo_inverse(mat);
+  a32_matrix_print(pinv);
 }
