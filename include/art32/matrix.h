@@ -76,14 +76,14 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat);
  *
  * @param mat1 The first matrix.
  * @param mat2 The second matrix.
- * @return The calculate matrix.
+ * @return The calculated matrix.
  */
 a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2);
 
 /**
- * Calculates the right pseudo inverse.
+ * Calculates the pseudo inverse of the matrix.
  *
- * @return The calculate matrix.
+ * @return The calculated matrix.
  */
 a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat);
 

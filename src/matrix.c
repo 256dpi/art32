@@ -251,6 +251,13 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 }
 
 a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
+  // flip if tall
+  bool flipped = false;
+  if (mat.rows > mat.cols) {
+    mat = a32_matrix_transpose(mat);
+    flipped = true;
+  }
+
   // prepare maps for valid rows and columns
   size_t *row_map = calloc(sizeof(size_t), mat.rows);
   size_t *col_map = calloc(sizeof(size_t), mat.cols);
@@ -354,7 +361,17 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   free(col_map);
   free(row_map);
 
-  return final;
+  // get result
+  a32_matrix_t result = final;
+
+  // flip back
+  if (flipped) {
+    result = a32_matrix_transpose(final);
+    a32_matrix_free(final);
+    a32_matrix_free(mat);
+  }
+
+  return result;
 }
 
 void a32_matrix_print(a32_matrix_t mat) {

@@ -78,8 +78,6 @@ void app_main() {
   a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
-  // TODO: Finding the left pseudo inverse is not supported.
-
   // test matrix 3
   ESP_LOGI("matrix", "test 3");
   double values3[5][3] = {
