@@ -10,7 +10,7 @@
 
 #define TINY 1.0e-20f;
 
-static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
+static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   size_t i_max = 0;
   double big, dum, sum, temp, d;
 
@@ -93,7 +93,7 @@ static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   return true;
 }
 
-static void a32_matrix_lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_t b) {
+static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_t b) {
   int8_t ip, ii = -1;
 
   double sum;
@@ -224,7 +224,7 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 
   // decompose
   a32_vector_t index = a32_vector_new(mat.rows);
-  a32_matrix_lu_decompose(temp, index);
+  lu_decompose(temp, index);
 
   a32_vector_t col = a32_vector_new(mat.rows);
 
@@ -235,7 +235,7 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 
     col.data[j] = 1.0f;
 
-    a32_matrix_lu_back_substitute(temp, index, col);
+    lu_back_substitute(temp, index, col);
 
     for (size_t i = 0; i < mat.rows; i++) {
       out.data[i][j] = col.data[i];
