@@ -81,6 +81,15 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat);
 a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2);
 
 /**
+ * Calculates the product of a matrix with a scalar.
+ *
+ * @param mat The matrix.
+ * @param scalar The scalar.
+ * @return The calculated matrix.
+ */
+a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar);
+
+/**
  * Calculates the pseudo inverse of the matrix.
  *
  * @return The calculated matrix.

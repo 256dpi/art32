@@ -219,6 +219,20 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   return out;
 }
 
+a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
+  // allocate
+  a32_matrix_t out = a32_matrix_copy(mat);
+
+  // multiply
+  for (size_t r = 0; r < mat.rows; r++) {
+    for (size_t c = 0; c < mat.cols; c++) {
+      out.values[r][c] *= scalar;
+    }
+  }
+
+  return out;
+}
+
 a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   // copy
   a32_matrix_t out = a32_matrix_copy(mat);
