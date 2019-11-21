@@ -21,7 +21,7 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
     big = 0.0f;
 
     for (size_t j = 0; j < mat.cols; j++) {
-      if ((temp = fabs(mat.data[i][j])) > big) {
+      if ((temp = fabs(mat.values[i][j])) > big) {
         big = temp;
       }
     }
@@ -31,32 +31,32 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
       return false;
     }
 
-    vv.data[i] = 1.0f / big;
+    vv.values[i] = 1.0f / big;
   }
 
   for (size_t j = 0; j < mat.rows; j++) {
     for (size_t i = 0; i < j; i++) {
-      sum = mat.data[i][j];
+      sum = mat.values[i][j];
 
       for (size_t k = 0; k < i; k++) {
-        sum -= mat.data[i][k] * mat.data[k][j];
+        sum -= mat.values[i][k] * mat.values[k][j];
       }
 
-      mat.data[i][j] = sum;
+      mat.values[i][j] = sum;
     }
 
     big = 0.0f;
 
     for (size_t i = j; i < mat.rows; i++) {
-      sum = mat.data[i][j];
+      sum = mat.values[i][j];
 
       for (size_t k = 0; k < j; k++) {
-        sum -= mat.data[i][k] * mat.data[k][j];
+        sum -= mat.values[i][k] * mat.values[k][j];
       }
 
-      mat.data[i][j] = sum;
+      mat.values[i][j] = sum;
 
-      if ((dum = (vv.data[i] * fabs(sum))) >= big) {
+      if ((dum = (vv.values[i] * fabs(sum))) >= big) {
         big = dum;
         i_max = i;
       }
@@ -64,26 +64,26 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 
     if (j != i_max) {
       for (size_t k = 0; k < mat.rows; k++) {
-        dum = mat.data[i_max][k];
-        mat.data[i_max][k] = mat.data[j][k];
-        mat.data[j][k] = dum;
+        dum = mat.values[i_max][k];
+        mat.values[i_max][k] = mat.values[j][k];
+        mat.values[j][k] = dum;
       }
 
       d = -(d);
-      vv.data[i_max] = vv.data[j];
+      vv.values[i_max] = vv.values[j];
     }
 
-    index.data[j] = i_max;
+    index.values[j] = i_max;
 
-    if (mat.data[j][j] == 0.0f) {
-      mat.data[j][j] = TINY
+    if (mat.values[j][j] == 0.0f) {
+      mat.values[j][j] = TINY
     }
 
     if (j != (mat.rows - 1)) {
-      dum = 1.0f / (mat.data[j][j]);
+      dum = 1.0f / (mat.values[j][j]);
 
       for (size_t i = j + 1; i < mat.rows; i++) {
-        mat.data[i][j] *= dum;
+        mat.values[i][j] *= dum;
       }
     }
   }
@@ -99,23 +99,23 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
   double sum;
 
   for (size_t i = 0; i < mat.rows; i++) {
-    ip = index.data[i];
-    sum = b.data[ip];
-    b.data[ip] = b.data[i];
+    ip = index.values[i];
+    sum = b.values[ip];
+    b.values[ip] = b.values[i];
 
     if (ii != -1)
-      for (size_t j = ii; j <= (i - 1); j++) sum -= mat.data[i][j] * b.data[j];
+      for (size_t j = ii; j <= (i - 1); j++) sum -= mat.values[i][j] * b.values[j];
     else if (sum)
       ii = i;
 
-    b.data[i] = sum;
+    b.values[i] = sum;
   }
 
   for (int8_t i = (mat.rows - 1); i >= 0; i--) {
-    sum = b.data[i];
-    for (size_t j = (i + 1); j < mat.rows; j++) sum -= mat.data[i][j] * b.data[j];
+    sum = b.values[i];
+    for (size_t j = (i + 1); j < mat.rows; j++) sum -= mat.values[i][j] * b.values[j];
 
-    b.data[i] = sum / mat.data[i][i];
+    b.values[i] = sum / mat.values[i][i];
   }
 }
 
@@ -124,25 +124,25 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   a32_matrix_t matrix = {
       .rows = rows,
       .cols = cols,
-      .data = calloc(sizeof(double *), rows),
+      .values = calloc(sizeof(double *), rows),
   };
 
-  // allocate rows
+  // allocate columns
   for (size_t r = 0; r < rows; r++) {
-    matrix.data[r] = calloc(sizeof(double), cols);
+    matrix.values[r] = calloc(sizeof(double), cols);
   }
 
   return matrix;
 }
 
-a32_matrix_t a32_matrix_use(const double *data, size_t rows, size_t cols) {
+a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
   // allocate
   a32_matrix_t mat = a32_matrix_new(rows, cols);
 
-  // allocate rows and copy values
+  // copy values
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
-      mat.data[r][c] = data[r * cols + c];
+      mat.values[r][c] = values[r * cols + c];
     }
   }
 
@@ -150,23 +150,23 @@ a32_matrix_t a32_matrix_use(const double *data, size_t rows, size_t cols) {
 }
 
 void a32_matrix_free(a32_matrix_t mat) {
-  // free cols
+  // free columns
   for (size_t r = 0; r < mat.rows; r++) {
-    free(mat.data[r]);
+    free(mat.values[r]);
   }
 
   // free rows
-  free(mat.data);
+  free(mat.values);
 }
 
 a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
   // allocate
   a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
 
-  // copy data
+  // copy values
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      out.data[r][c] = mat.data[r][c];
+      out.values[r][c] = mat.values[r][c];
     }
   }
 
@@ -174,14 +174,16 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
 }
 
 void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
+  // copy values from vector
   for (size_t c = 0; c < vec.len; c++) {
-    mat.data[row][c] = vec.data[c];
+    mat.values[row][c] = vec.values[c];
   }
 }
 
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
+  // copy values from vector
   for (size_t r = 0; r < vec.len; r++) {
-    mat.data[r][col] = vec.data[r];
+    mat.values[r][col] = vec.values[r];
   }
 }
 
@@ -189,10 +191,10 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   // allocate
   a32_matrix_t out = a32_matrix_new(mat.cols, mat.rows);
 
-  // transpose data
+  // transpose
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      out.data[c][r] = mat.data[r][c];
+      out.values[c][r] = mat.values[r][c];
     }
   }
 
@@ -203,14 +205,14 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   // allocate
   a32_matrix_t out = a32_matrix_new(mat1.rows, mat2.cols);
 
-  // product data
+  // multiply
   for (size_t r = 0; r < mat1.rows; r++) {
     for (size_t c = 0; c < mat2.cols; c++) {
       double sum = 0;
       for (size_t k = 0; k < mat1.cols; k++) {
-        sum += mat1.data[r][k] * mat2.data[k][c];
+        sum += mat1.values[r][k] * mat2.values[k][c];
       }
-      out.data[r][c] = sum;
+      out.values[r][c] = sum;
     }
   }
 
@@ -230,15 +232,15 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 
   for (size_t j = 0; j < mat.rows; j++) {
     for (size_t i = 0; i < mat.rows; i++) {
-      col.data[i] = 0.0f;
+      col.values[i] = 0.0f;
     }
 
-    col.data[j] = 1.0f;
+    col.values[j] = 1.0f;
 
     lu_back_substitute(temp, index, col);
 
     for (size_t i = 0; i < mat.rows; i++) {
-      out.data[i][j] = col.data[i];
+      out.values[i][j] = col.values[i];
     }
   }
 
@@ -267,7 +269,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   for (size_t r = 0; r < mat.rows; r++) {
     row_map[r] = SIZE_MAX;
     for (size_t c = 0; c < mat.cols; c++) {
-      if (mat.data[r][c] != 0) {
+      if (mat.values[r][c] != 0) {
         row_map[r] = 0;
       }
     }
@@ -282,7 +284,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   for (size_t c = 0; c < mat.cols; c++) {
     col_map[c] = SIZE_MAX;
     for (size_t r = 0; r < mat.rows; r++) {
-      if (mat.data[r][c] != 0) {
+      if (mat.values[r][c] != 0) {
         col_map[c] = 0;
       }
     }
@@ -312,7 +314,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
       // copy value
       size_t tr = row_map[mr];
       size_t tc = col_map[mc];
-      temp.data[tr][tc] = mat.data[mr][mc];
+      temp.values[tr][tc] = mat.values[mr][mc];
     }
   }
 
@@ -341,12 +343,12 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
 
       // set zero value if row or column was zero
       if (or == SIZE_MAX || oc == SIZE_MAX) {
-        final.data[fr][fc] = 0;
+        final.values[fr][fc] = 0;
         continue;
       }
 
       // copy value
-      final.data[fr][fc] = output.data[or][oc];
+      final.values[fr][fc] = output.values[or][oc];
     }
   }
 
@@ -379,7 +381,7 @@ void a32_matrix_print(a32_matrix_t mat) {
     printf("[");
 
     for (size_t c = 0; c < mat.cols; c++) {
-      printf("%+.3f%s", mat.data[r][c], c + 1 < mat.cols ? " " : "");
+      printf("%+.3f%s", mat.values[r][c], c + 1 < mat.cols ? " " : "");
     }
 
     printf("]\n");

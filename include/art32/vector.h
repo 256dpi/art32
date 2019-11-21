@@ -8,7 +8,7 @@
  */
 typedef struct {
   size_t len;
-  double *data;
+  double *values;
 } a32_vector_t;
 
 /**
@@ -38,7 +38,7 @@ a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length);
 void a32_vector_free(a32_vector_t vec);
 
 /**
- * Finds the biggest number.
+ * Find the biggest value.
  *
  * @param vec The vector.
  * @return The maximum.
@@ -46,7 +46,7 @@ void a32_vector_free(a32_vector_t vec);
 double a32_vector_max(a32_vector_t vec);
 
 /**
- * Finds the smallest number.
+ * Find the smallest value.
  *
  * @param vec The vector.
  * @return The minimum.
