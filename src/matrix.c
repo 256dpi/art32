@@ -119,6 +119,25 @@ static void a32_matrix_lu_back_substitute(a32_matrix_t mat, a32_vector_t index, 
   }
 }
 
+a32_matrix_t a32_matrix_use(double *data, size_t rows, size_t cols) {
+  // prepare matrix
+  a32_matrix_t matrix = {
+      .rows = rows,
+      .cols = cols,
+      .data = calloc(sizeof(double *), rows),
+  };
+
+  // allocate rows and copy values
+  for (size_t r = 0; r < rows; r++) {
+    matrix.data[r] = calloc(sizeof(double), cols);
+    for (size_t c = 0; c < cols; c++) {
+      matrix.data[r][c] = data[r * cols + c];
+    }
+  }
+
+  return matrix;
+}
+
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   // prepare matrix
   a32_matrix_t matrix = {

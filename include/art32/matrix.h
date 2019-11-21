@@ -14,6 +14,16 @@ typedef struct {
 } a32_matrix_t;
 
 /**
+ * Create a matrix from a two dimensional array.
+ *
+ * @param data The values.
+ * @param rows The row count.
+ * @param cols The column count.
+ * @return The allocated matrix.
+ */
+a32_matrix_t a32_matrix_use(double *data, size_t rows, size_t cols);
+
+/**
  * Creates a new matrix.
  *
  * @param rows The row count.
