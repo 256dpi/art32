@@ -124,25 +124,25 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   a32_matrix_t matrix = {
       .rows = rows,
       .cols = cols,
-      .data = (double **)calloc(sizeof(double *), rows),
+      .data = calloc(sizeof(double *), rows),
   };
 
   // allocate rows
   for (size_t i = 0; i < rows; i++) {
-    matrix.data[i] = (double *)calloc(sizeof(double), cols);
+    matrix.data[i] = calloc(sizeof(double), cols);
   }
 
   return matrix;
 }
 
-void a32_matrix_free(a32_matrix_t matrix) {
+void a32_matrix_free(a32_matrix_t mat) {
   // free cols
-  for (size_t i = 0; i < matrix.rows; i++) {
-    free(matrix.data[i]);
+  for (size_t i = 0; i < mat.rows; i++) {
+    free(mat.data[i]);
   }
 
   // free rows
-  free(matrix.data);
+  free(mat.data);
 }
 
 a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
@@ -236,33 +236,125 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   return out;
 }
 
-a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t matrix) {
-  // transpose
-  a32_matrix_t transpose = a32_matrix_transpose(matrix);
+a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
+  // prepare maps for valid rows and columns
+  size_t *row_map = calloc(sizeof(size_t), mat.rows);
+  size_t *col_map = calloc(sizeof(size_t), mat.cols);
 
-  // product
-  a32_matrix_t product = a32_matrix_multiply(matrix, transpose);
+  // set row map and collect valid rows
+  size_t valid_rows = 0;
+  for (size_t r = 0; r < mat.rows; r++) {
+    row_map[r] = SIZE_MAX;
+    for (size_t c = 0; c < mat.cols; c++) {
+      if (mat.data[r][c] != 0) {
+        row_map[r] = 0;
+      }
+    }
+    if (row_map[r] == 0) {
+      row_map[r] = valid_rows;
+      valid_rows++;
+    }
+  }
+
+  // set column map and collect valid columns
+  size_t valid_cols = 0;
+  for (size_t c = 0; c < mat.cols; c++) {
+    col_map[c] = SIZE_MAX;
+    for (size_t r = 0; r < mat.rows; r++) {
+      if (mat.data[r][c] != 0) {
+        col_map[c] = 0;
+      }
+    }
+    if (col_map[c] == 0) {
+      col_map[c] = valid_cols;
+      valid_cols++;
+    }
+  }
+
+  // prepare temporary matrix (without zero row and columns)
+  a32_matrix_t temp = a32_matrix_new(valid_rows, valid_cols);
+
+  // construct temporary matrix rows
+  for (size_t mr = 0; mr < mat.rows; mr++) {
+    // skip if zero
+    if (row_map[mr] == SIZE_MAX) {
+      continue;
+    }
+
+    // construct temporary matrix columns
+    for (size_t mc = 0; mc < mat.cols; mc++) {
+      // skip if zero
+      if (col_map[mc] == SIZE_MAX) {
+        continue;
+      }
+
+      // copy value
+      size_t tr = row_map[mr];
+      size_t tc = col_map[mc];
+      temp.data[tr][tc] = mat.data[mr][mc];
+    }
+  }
+
+  // transpose
+  a32_matrix_t transpose = a32_matrix_transpose(temp);
+
+  // multiply
+  a32_matrix_t product = a32_matrix_multiply(temp, transpose);
 
   // invert
   a32_matrix_t inverse = a32_matrix_invert(product);
 
   // final transpose
-  a32_matrix_t final = a32_matrix_multiply(transpose, inverse);
+  a32_matrix_t output = a32_matrix_multiply(transpose, inverse);
 
-  // free intermediaries
+  // construct final matrix (with zero rows and columns)
+  a32_matrix_t final = a32_matrix_new(mat.cols, mat.rows);
+
+  // construct final matrix rows
+  for (size_t fr = 0; fr < final.rows; fr++) {
+    // add zero row if column was zero
+    if (col_map[fr] == SIZE_MAX) {
+      for (size_t mc = 0; mc < mat.cols; mc++) {
+        final.data[fr][mc] = 0;
+      }
+      continue;
+    }
+
+    // construct temporary matrix columns
+    for (size_t fc = 0; fc < final.cols; fc++) {
+      // add zero column if row was zero
+      if (row_map[fc] == SIZE_MAX) {
+        final.data[fr][fc] = 0;
+        continue;
+      }
+
+      // copy value
+      size_t or = col_map[fr];
+      size_t oc = row_map[fc];
+      final.data[fr][fc] = output.data[or][oc];
+    }
+  }
+
+  // free matrices
+  a32_matrix_free(output);
   a32_matrix_free(inverse);
   a32_matrix_free(product);
   a32_matrix_free(transpose);
+  a32_matrix_free(temp);
+
+  // free maps
+  free(col_map);
+  free(row_map);
 
   return final;
 }
 
 void a32_matrix_print(a32_matrix_t mat) {
-  for (size_t i = 0; i < mat.rows; i++) {
+  for (size_t r = 0; r < mat.rows; r++) {
     printf("[");
 
-    for (size_t j = 0; j < mat.cols; j++) {
-      printf("%+.3f ", mat.data[i][j]);
+    for (size_t c = 0; c < mat.cols; c++) {
+      printf("%+.3f%s", mat.data[r][c], c + 1 < mat.cols ? " " : "");
     }
 
     printf("]\n");

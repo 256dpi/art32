@@ -1,3 +1,4 @@
+#include <art32/matrix.h>
 #include <art32/motion.h>
 #include <art32/smooth.h>
 #include <art32/strconv.h>
@@ -34,5 +35,39 @@ void app_main() {
   a32_motion_update(&motion, 100, 1);
   ESP_LOGI("motion", "motion: %s (15)", a32_d2str(motion.position));
 
-  // TODO: Test matrix.
+  // test matrix 1
+  a32_matrix_t mat = a32_matrix_new(2, 3);
+  mat.data[0][0] = 0.1f;
+  mat.data[0][1] = 0.2f;
+  mat.data[0][2] = 0.1f;
+  mat.data[1][0] = 0.3f;
+  mat.data[1][1] = 0.4f;
+  mat.data[1][2] = 0.1f;
+  a32_matrix_print(mat);
+  ESP_LOGI("matrix", "---");
+  a32_matrix_t pinv = a32_matrix_pseudo_inverse(mat);
+  a32_matrix_print(pinv);
+  ESP_LOGI("matrix", "---");
+
+  // test matrix 2
+  mat = a32_matrix_new(3, 5);
+  mat.data[0][0] = 0.0f;
+  mat.data[0][1] = 0.1f;
+  mat.data[0][2] = 0.2f;
+  mat.data[0][3] = 0.0f;
+  mat.data[0][4] = 0.1f;
+  mat.data[1][0] = 0.0f;
+  mat.data[1][1] = 0.0f;
+  mat.data[1][2] = 0.0f;
+  mat.data[1][3] = 0.0f;
+  mat.data[1][4] = 0.0f;
+  mat.data[2][0] = 0.0f;
+  mat.data[2][1] = 0.3f;
+  mat.data[2][2] = 0.4f;
+  mat.data[2][3] = 0.0f;
+  mat.data[2][4] = 0.1f;
+  a32_matrix_print(mat);
+  ESP_LOGI("matrix", "---");
+  pinv = a32_matrix_pseudo_inverse(mat);
+  a32_matrix_print(pinv);
 }

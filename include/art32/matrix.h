@@ -75,7 +75,7 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2);
  *
  * @return The calculate matrix.
  */
-a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t matrix);
+a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat);
 
 /**
  *  Prints the matrix using `printf`.
