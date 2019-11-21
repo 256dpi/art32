@@ -8,7 +8,7 @@ a32_vector_t a32_vector_new(size_t length) {
   // create vector
   a32_vector_t vector = {
       .len = length,
-      .data = (float *)calloc(sizeof(float), length),
+      .data = (double *)calloc(sizeof(double), length),
   };
 
   return vector;
@@ -26,9 +26,9 @@ void a32_vector_free(a32_vector_t vec) {
   free(vec.data);
 }
 
-float a32_vector_max(a32_vector_t vec) {
+double a32_vector_max(a32_vector_t vec) {
   // set max to first element
-  float max = vec.data[0];
+  double max = vec.data[0];
 
   // find the biggest element
   for (size_t i = 0; i < vec.len; i++) {
@@ -40,9 +40,9 @@ float a32_vector_max(a32_vector_t vec) {
   return max;
 }
 
-float a32_vector_min(a32_vector_t vec) {
+double a32_vector_min(a32_vector_t vec) {
   // set min to first element
-  float min = vec.data[0];
+  double min = vec.data[0];
 
   // find the smallest element
   for (size_t i = 0; i < vec.len; i++) {
@@ -54,20 +54,20 @@ float a32_vector_min(a32_vector_t vec) {
   return min;
 }
 
-float a32_vector_mag(a32_vector_t vec) {
+double a32_vector_mag(a32_vector_t vec) {
   // prepare sum
-  float sum = 0;
+  double sum = 0;
 
   // add products
   for (size_t i = 0; i < vec.len; i++) {
     sum += (vec.data[i] * vec.data[i]);
   }
 
-  return sqrtf(sum);
+  return sqrt(sum);
 }
 
 void a32_vector_norm(a32_vector_t vec) {
-  float m = a32_vector_mag(vec);
+  double m = a32_vector_mag(vec);
   if (m > 0) {
     for (size_t i = 0; i < vec.len; i++) {
       vec.data[i] = vec.data[i] / m;

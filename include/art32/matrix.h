@@ -10,7 +10,7 @@
 typedef struct {
   size_t rows;
   size_t cols;
-  float **data;
+  double **data;
 } a32_matrix_t;
 
 /**

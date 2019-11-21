@@ -12,7 +12,7 @@
 
 static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   size_t i_max = 0;
-  float big, dum, sum, temp, d;
+  double big, dum, sum, temp, d;
 
   a32_vector_t vv = a32_vector_new(mat.cols);
   d = 1.0f;
@@ -21,7 +21,7 @@ static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
     big = 0.0f;
 
     for (size_t j = 0; j < mat.cols; j++) {
-      if ((temp = (float)fabsf(mat.data[i][j])) > big) {
+      if ((temp = fabs(mat.data[i][j])) > big) {
         big = temp;
       }
     }
@@ -56,7 +56,7 @@ static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 
       mat.data[i][j] = sum;
 
-      if ((dum = (float)(vv.data[i] * fabsf(sum))) >= big) {
+      if ((dum = (vv.data[i] * fabs(sum))) >= big) {
         big = dum;
         i_max = i;
       }
@@ -96,7 +96,7 @@ static bool a32_matrix_lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 static void a32_matrix_lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_t b) {
   int8_t ip, ii = -1;
 
-  float sum;
+  double sum;
 
   for (size_t i = 0; i < mat.rows; i++) {
     ip = index.data[i];
@@ -124,12 +124,12 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   a32_matrix_t matrix = {
       .rows = rows,
       .cols = cols,
-      .data = (float **)calloc(sizeof(float *), rows),
+      .data = (double **)calloc(sizeof(double *), rows),
   };
 
   // allocate rows
   for (size_t i = 0; i < rows; i++) {
-    matrix.data[i] = (float *)calloc(sizeof(float), cols);
+    matrix.data[i] = (double *)calloc(sizeof(double), cols);
   }
 
   return matrix;
@@ -192,7 +192,7 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   // product data
   for (size_t i = 0; i < mat1.rows; i++) {
     for (size_t j = 0; j < mat2.cols; j++) {
-      float sum = 0;
+      double sum = 0;
       for (size_t k = 0; k < mat1.cols; k++) {
         sum += mat1.data[i][k] * mat2.data[k][j];
       }

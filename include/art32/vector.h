@@ -8,7 +8,7 @@
  */
 typedef struct {
   size_t len;
-  float *data;
+  double *data;
 } a32_vector_t;
 
 /**
@@ -43,7 +43,7 @@ void a32_vector_free(a32_vector_t vec);
  * @param vec The vector.
  * @return The maximum.
  */
-float a32_vector_max(a32_vector_t vec);
+double a32_vector_max(a32_vector_t vec);
 
 /**
  * Finds the smallest number.
@@ -51,7 +51,7 @@ float a32_vector_max(a32_vector_t vec);
  * @param vec The vector.
  * @return The minimum.
  */
-float a32_vector_min(a32_vector_t vec);
+double a32_vector_min(a32_vector_t vec);
 
 /**
  * Calculates the magnitude of the vector.
@@ -59,7 +59,7 @@ float a32_vector_min(a32_vector_t vec);
  * @param vec The vector.
  * @return The magnitude.
  */
-float a32_vector_mag(a32_vector_t vec);
+double a32_vector_mag(a32_vector_t vec);
 
 /**
  * Normalizes the vector to be a unit vector.
