@@ -9,17 +9,17 @@
 
 #include <art32/matrix.h>
 
-#define TINY 1.0e-20f;
+#define TINY 1.0e-20;
 
 static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   size_t i_max = 0;
   double big, dum, sum, temp, d;
 
   a32_vector_t vv = a32_vector_new(mat.cols);
-  d = 1.0f;
+  d = 1.0;
 
   for (size_t i = 0; i < mat.rows; i++) {
-    big = 0.0f;
+    big = 0.0;
 
     for (size_t j = 0; j < mat.cols; j++) {
       if ((temp = fabs(A32_MAT(mat, i, j))) > big) {
@@ -32,7 +32,7 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
       return false;
     }
 
-    vv.values[i] = 1.0f / big;
+    vv.values[i] = 1.0 / big;
   }
 
   for (size_t j = 0; j < mat.rows; j++) {
@@ -46,7 +46,7 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
       A32_MAT(mat, i, j) = sum;
     }
 
-    big = 0.0f;
+    big = 0.0;
 
     for (size_t i = j; i < mat.rows; i++) {
       sum = A32_MAT(mat, i, j);
@@ -76,12 +76,12 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 
     index.values[j] = i_max;
 
-    if (A32_MAT(mat, j, j) == 0.0f) {
+    if (A32_MAT(mat, j, j) == 0.0) {
       A32_MAT(mat, j, j) = TINY
     }
 
     if (j != (mat.rows - 1)) {
-      dum = 1.0f / A32_MAT(mat, j, j);
+      dum = 1.0 / A32_MAT(mat, j, j);
 
       for (size_t i = j + 1; i < mat.rows; i++) {
         A32_MAT(mat, i, j) *= dum;
@@ -237,10 +237,10 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 
   for (size_t j = 0; j < mat.rows; j++) {
     for (size_t i = 0; i < mat.rows; i++) {
-      col.values[i] = 0.0f;
+      col.values[i] = 0.0;
     }
 
-    col.values[j] = 1.0f;
+    col.values[j] = 1.0;
 
     lu_back_substitute(temp, index, col);
 
