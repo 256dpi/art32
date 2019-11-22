@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,6 +79,16 @@ void a32_vector_norm(a32_vector_t vec) {
   // normalize values
   for (size_t i = 0; i < vec.len; i++) {
     vec.values[i] = vec.values[i] / m;
+  }
+}
+
+void a32_vector_multiply(a32_vector_t vec1, a32_vector_t vec2) {
+  // assert shape
+  assert(vec1.len == vec2.len);
+
+  // multiply
+  for (size_t e = 0; e < vec1.len; e++) {
+    vec1.values[e] *= vec2.values[e];
   }
 }
 

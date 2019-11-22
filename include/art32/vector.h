@@ -69,6 +69,14 @@ double a32_vector_mag(a32_vector_t vec);
 void a32_vector_norm(a32_vector_t vec);
 
 /**
+ * Multiply two vectors.
+ *
+ * @param vec1 The first vector.
+ * @param vec2 the second vector.
+ */
+void a32_vector_multiply(a32_vector_t vec1, a32_vector_t vec2);
+
+/**
  * Prints the vector using `printf`.
  *
  * @param vec The vector.
