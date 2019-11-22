@@ -35,13 +35,13 @@ void app_main() {
   a32_motion_update(&motion, 100, 1);
   ESP_LOGI("motion", "motion: %s (15)", a32_d2str(motion.position));
 
-  // test matrix 0
-  ESP_LOGI("matrix", "test 0");
-  double values0[2][2] = {
+  // test matrix 2x3
+  ESP_LOGI("matrix", "test 2x2");
+  double v2x2[2][2] = {
       {0.1, 0.2},
       {0.3, 0.4},
   };
-  a32_matrix_t mat = a32_matrix_use((double*)values0, 2, 2);
+  a32_matrix_t mat = a32_matrix_use((double*)v2x2, 2, 2);
   a32_matrix_print(mat);
   ESP_LOGI("matrix", "---");
   a32_matrix_t pinv = a32_matrix_pseudo_inverse(mat);
@@ -49,13 +49,13 @@ void app_main() {
   a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
-  // test matrix 1
-  ESP_LOGI("matrix", "test 1");
-  double values1[2][3] = {
+  // test matrix 2x3
+  ESP_LOGI("matrix", "test 2x3");
+  double v2x3[2][3] = {
       {0.1, 0.2, 0.1},
       {0.3, 0.4, 0.1},
   };
-  mat = a32_matrix_use((double*)values1, 2, 3);
+  mat = a32_matrix_use((double*)v2x3, 2, 3);
   a32_matrix_print(mat);
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
@@ -63,14 +63,29 @@ void app_main() {
   a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
-  // test matrix 2
-  ESP_LOGI("matrix", "test 2");
-  double values2[3][5] = {
+  // test matrix 3x3
+  ESP_LOGI("matrix", "test 3x3");
+  double v3x3[3][3] = {
+      {0.1, 0.2, 0.1},
+      {0.3, 0.4, 0.1},
+      {0.1, 0.2, 0.3},
+  };
+  mat = a32_matrix_use((double*)v3x3, 3, 3);
+  a32_matrix_print(mat);
+  ESP_LOGI("matrix", "---");
+  pinv = a32_matrix_pseudo_inverse(mat);
+  a32_matrix_print(pinv);
+  a32_matrix_free(mat);
+  a32_matrix_free(pinv);
+
+  // test matrix 3x5z
+  ESP_LOGI("matrix", "test 3x5z");
+  double v3x5z[3][5] = {
       {0.0, 0.1, 0.2, 0.0, 0.1},
       {0.0, 0.0, 0.0, 0.0, 0.0},
       {0.0, 0.3, 0.4, 0.0, 0.1},
   };
-  mat = a32_matrix_use((double*)values2, 3, 5);
+  mat = a32_matrix_use((double*)v3x5z, 3, 5);
   a32_matrix_print(mat);
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
@@ -78,12 +93,12 @@ void app_main() {
   a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
-  // test matrix 3
-  ESP_LOGI("matrix", "test 3");
-  double values3[5][3] = {
+  // test matrix 5x3z
+  ESP_LOGI("matrix", "test 5x3z");
+  double v5x3z[5][3] = {
       {0.0, 0.0, 0.0}, {0.1, 0.0, 0.3}, {0.2, 0.0, 0.4}, {0.0, 0.0, 0.0}, {0.1, 0.0, 0.1},
   };
-  mat = a32_matrix_use((double*)values3, 5, 3);
+  mat = a32_matrix_use((double*)v5x3z, 5, 3);
   a32_matrix_print(mat);
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
