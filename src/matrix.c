@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <art32/matrix.h>
 
@@ -143,11 +144,7 @@ a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
   a32_matrix_t mat = a32_matrix_new(rows, cols);
 
   // copy values
-  for (size_t r = 0; r < rows; r++) {
-    for (size_t c = 0; c < cols; c++) {
-      A32_MAT(mat, r, c) = values[r * cols + c];
-    }
-  }
+  memcpy(mat.values, values, sizeof(double) * rows * cols);
 
   return mat;
 }
@@ -162,11 +159,7 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
   a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
 
   // copy values
-  for (size_t r = 0; r < mat.rows; r++) {
-    for (size_t c = 0; c < mat.cols; c++) {
-      A32_MAT(out, r, c) = A32_MAT(mat, r, c);
-    }
-  }
+  memcpy(out.values, mat.values, sizeof(double) * mat.rows * mat.cols);
 
   return out;
 }
