@@ -10,13 +10,13 @@
 typedef struct {
   size_t rows;
   size_t cols;
-  double **values;
+  double *values;
 } a32_matrix_t;
 
 /**
  * Helper for accessing matrix elements.
  */
-#define A32_MAT(mat, row, col) mat.values[row][col]
+#define A32_MAT(mat, row, col) mat.values[row * mat.cols + col]
 
 /**
  * Creates a new matrix.

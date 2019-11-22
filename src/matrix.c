@@ -125,17 +125,15 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
 }
 
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
+  // allocate values
+  double *values = calloc(sizeof(double), rows * cols);
+
   // prepare matrix
   a32_matrix_t matrix = {
       .rows = rows,
       .cols = cols,
-      .values = calloc(sizeof(double *), rows),
+      .values = values,
   };
-
-  // allocate columns
-  for (size_t r = 0; r < rows; r++) {
-    matrix.values[r] = calloc(sizeof(double), cols);
-  }
 
   return matrix;
 }
@@ -155,12 +153,7 @@ a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
 }
 
 void a32_matrix_free(a32_matrix_t mat) {
-  // free columns
-  for (size_t r = 0; r < mat.rows; r++) {
-    free(mat.values[r]);
-  }
-
-  // free rows
+  // free values
   free(mat.values);
 }
 
