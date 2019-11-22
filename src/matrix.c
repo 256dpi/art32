@@ -103,17 +103,22 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
     sum = b.values[ip];
     b.values[ip] = b.values[i];
 
-    if (ii != -1)
-      for (size_t j = ii; j <= (i - 1); j++) sum -= mat.values[i][j] * b.values[j];
-    else if (sum)
+    if (ii != -1) {
+      for (size_t j = ii; j <= (i - 1); j++) {
+        sum -= mat.values[i][j] * b.values[j];
+      }
+    } else if (sum) {
       ii = i;
+    }
 
     b.values[i] = sum;
   }
 
   for (int8_t i = (mat.rows - 1); i >= 0; i--) {
     sum = b.values[i];
-    for (size_t j = (i + 1); j < mat.rows; j++) sum -= mat.values[i][j] * b.values[j];
+    for (size_t j = (i + 1); j < mat.rows; j++) {
+      sum -= mat.values[i][j] * b.values[j];
+    }
 
     b.values[i] = sum / mat.values[i][i];
   }
