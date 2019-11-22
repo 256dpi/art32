@@ -165,8 +165,39 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
   return out;
 }
 
+a32_vector_t a32_matrix_get_row(a32_matrix_t mat, size_t row) {
+  // assert shape
+  assert(row < mat.rows);
+
+  // allocate
+  a32_vector_t vec = a32_vector_new(mat.cols);
+
+  // copy values from matrix
+  for (size_t c = 0; c < vec.len; c++) {
+    vec.values[c] = A32_MAT(mat, row, c);
+  }
+
+  return vec;
+}
+
+a32_vector_t a32_matrix_get_col(a32_matrix_t mat, size_t col) {
+  // assert shape
+  assert(col < mat.cols);
+
+  // allocate
+  a32_vector_t vec = a32_vector_new(mat.rows);
+
+  // copy values from matrix
+  for (size_t r = 0; r < vec.len; r++) {
+    vec.values[r] = A32_MAT(mat, r, col);
+  }
+
+  return vec;
+}
+
 void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
   // assert shape
+  assert(row < mat.rows);
   assert(mat.cols == vec.len);
 
   // copy values from vector
@@ -177,6 +208,7 @@ void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
 
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
   // assert shape
+  assert(col < mat.cols);
   assert(mat.rows == vec.len);
 
   // copy values from vector

@@ -51,6 +51,22 @@ void a32_matrix_free(a32_matrix_t);
 a32_matrix_t a32_matrix_copy(a32_matrix_t mat);
 
 /**
+ * Get a row from the matrix.
+ * @param mat The matrix.
+ * @param row The row.
+ * @return The extracted vector.
+ */
+a32_vector_t a32_matrix_get_row(a32_matrix_t mat, size_t row);
+
+/**
+ * Get a column from the matrix.
+ * @param mat The matrix.
+ * @param col The column.
+ * @return The extracted vector.
+ */
+a32_vector_t a32_matrix_get_col(a32_matrix_t mat, size_t col);
+
+/**
  * Set row from vector.
  *
  * @param mat The matrix.
