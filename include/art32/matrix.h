@@ -14,6 +14,11 @@ typedef struct {
 } a32_matrix_t;
 
 /**
+ * Helper for accessing matrix elements.
+ */
+#define A32_MAT(mat, row, col) mat.values[row][col]
+
+/**
  * Creates a new matrix.
  *
  * @param rows The row count.

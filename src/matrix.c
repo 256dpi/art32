@@ -21,7 +21,7 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
     big = 0.0f;
 
     for (size_t j = 0; j < mat.cols; j++) {
-      if ((temp = fabs(mat.values[i][j])) > big) {
+      if ((temp = fabs(A32_MAT(mat, i, j))) > big) {
         big = temp;
       }
     }
@@ -36,25 +36,25 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 
   for (size_t j = 0; j < mat.rows; j++) {
     for (size_t i = 0; i < j; i++) {
-      sum = mat.values[i][j];
+      sum = A32_MAT(mat, i, j);
 
       for (size_t k = 0; k < i; k++) {
-        sum -= mat.values[i][k] * mat.values[k][j];
+        sum -= A32_MAT(mat, i, k) * A32_MAT(mat, k, j);
       }
 
-      mat.values[i][j] = sum;
+      A32_MAT(mat, i, j) = sum;
     }
 
     big = 0.0f;
 
     for (size_t i = j; i < mat.rows; i++) {
-      sum = mat.values[i][j];
+      sum = A32_MAT(mat, i, j);
 
       for (size_t k = 0; k < j; k++) {
-        sum -= mat.values[i][k] * mat.values[k][j];
+        sum -= A32_MAT(mat, i, k) * A32_MAT(mat, k, j);
       }
 
-      mat.values[i][j] = sum;
+      A32_MAT(mat, i, j) = sum;
 
       if ((dum = (vv.values[i] * fabs(sum))) >= big) {
         big = dum;
@@ -64,9 +64,9 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 
     if (j != i_max) {
       for (size_t k = 0; k < mat.rows; k++) {
-        dum = mat.values[i_max][k];
-        mat.values[i_max][k] = mat.values[j][k];
-        mat.values[j][k] = dum;
+        dum = A32_MAT(mat, i_max, k);
+        A32_MAT(mat, i_max, k) = A32_MAT(mat, j, k);
+        A32_MAT(mat, j, k) = dum;
       }
 
       d = -(d);
@@ -75,15 +75,15 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
 
     index.values[j] = i_max;
 
-    if (mat.values[j][j] == 0.0f) {
-      mat.values[j][j] = TINY
+    if (A32_MAT(mat, j, j) == 0.0f) {
+      A32_MAT(mat, j, j) = TINY
     }
 
     if (j != (mat.rows - 1)) {
-      dum = 1.0f / (mat.values[j][j]);
+      dum = 1.0f / A32_MAT(mat, j, j);
 
       for (size_t i = j + 1; i < mat.rows; i++) {
-        mat.values[i][j] *= dum;
+        A32_MAT(mat, i, j) *= dum;
       }
     }
   }
@@ -105,7 +105,7 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
 
     if (ii != -1) {
       for (size_t j = ii; j <= (i - 1); j++) {
-        sum -= mat.values[i][j] * b.values[j];
+        sum -= A32_MAT(mat, i, j) * b.values[j];
       }
     } else if (sum) {
       ii = i;
@@ -117,10 +117,10 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
   for (int8_t i = (mat.rows - 1); i >= 0; i--) {
     sum = b.values[i];
     for (size_t j = (i + 1); j < mat.rows; j++) {
-      sum -= mat.values[i][j] * b.values[j];
+      sum -= A32_MAT(mat, i, j) * b.values[j];
     }
 
-    b.values[i] = sum / mat.values[i][i];
+    b.values[i] = sum / A32_MAT(mat, i, i);
   }
 }
 
@@ -147,7 +147,7 @@ a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
   // copy values
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
-      mat.values[r][c] = values[r * cols + c];
+      A32_MAT(mat, r, c) = values[r * cols + c];
     }
   }
 
@@ -171,7 +171,7 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
   // copy values
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      out.values[r][c] = mat.values[r][c];
+      A32_MAT(out, r, c) = A32_MAT(mat, r, c);
     }
   }
 
@@ -181,14 +181,14 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
 void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
   // copy values from vector
   for (size_t c = 0; c < vec.len; c++) {
-    mat.values[row][c] = vec.values[c];
+    A32_MAT(mat, row, c) = vec.values[c];
   }
 }
 
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
   // copy values from vector
   for (size_t r = 0; r < vec.len; r++) {
-    mat.values[r][col] = vec.values[r];
+    A32_MAT(mat, r, col) = vec.values[r];
   }
 }
 
@@ -199,7 +199,7 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   // transpose
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      out.values[c][r] = mat.values[r][c];
+      A32_MAT(out, c, r) = A32_MAT(mat, r, c);
     }
   }
 
@@ -215,9 +215,9 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
     for (size_t c = 0; c < mat2.cols; c++) {
       double sum = 0;
       for (size_t k = 0; k < mat1.cols; k++) {
-        sum += mat1.values[r][k] * mat2.values[k][c];
+        sum += A32_MAT(mat1, r, k) * A32_MAT(mat2, k, c);
       }
-      out.values[r][c] = sum;
+      A32_MAT(out, r, c) = sum;
     }
   }
 
@@ -231,7 +231,7 @@ a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
   // multiply
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      out.values[r][c] *= scalar;
+      A32_MAT(out, r, c) *= scalar;
     }
   }
 
@@ -259,7 +259,7 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
     lu_back_substitute(temp, index, col);
 
     for (size_t i = 0; i < mat.rows; i++) {
-      out.values[i][j] = col.values[i];
+      A32_MAT(out, i, j) = col.values[i];
     }
   }
 
@@ -288,7 +288,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   for (size_t r = 0; r < mat.rows; r++) {
     row_map[r] = SIZE_MAX;
     for (size_t c = 0; c < mat.cols; c++) {
-      if (mat.values[r][c] != 0) {
+      if (A32_MAT(mat, r, c) != 0) {
         row_map[r] = 0;
       }
     }
@@ -303,7 +303,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   for (size_t c = 0; c < mat.cols; c++) {
     col_map[c] = SIZE_MAX;
     for (size_t r = 0; r < mat.rows; r++) {
-      if (mat.values[r][c] != 0) {
+      if (A32_MAT(mat, r, c) != 0) {
         col_map[c] = 0;
       }
     }
@@ -333,7 +333,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
       // copy value
       size_t tr = row_map[mr];
       size_t tc = col_map[mc];
-      temp.values[tr][tc] = mat.values[mr][mc];
+      A32_MAT(temp, tr, tc) = A32_MAT(mat, mr, mc);
     }
   }
 
@@ -362,12 +362,12 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
 
       // set zero value if row or column was zero
       if (or == SIZE_MAX || oc == SIZE_MAX) {
-        final.values[fr][fc] = 0;
+        A32_MAT(final, fr, fc) = 0;
         continue;
       }
 
       // copy value
-      final.values[fr][fc] = output.values[or][oc];
+      A32_MAT(final, fr, fc) = A32_MAT(output, or, oc);
     }
   }
 
@@ -400,7 +400,7 @@ void a32_matrix_print(a32_matrix_t mat) {
     printf("[");
 
     for (size_t c = 0; c < mat.cols; c++) {
-      printf("%+.3f%s", mat.values[r][c], c + 1 < mat.cols ? " " : "");
+      printf("%+.3f%s", A32_MAT(mat, r, c), c + 1 < mat.cols ? " " : "");
     }
 
     printf("]\n");
