@@ -382,13 +382,12 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
 }
 
 void a32_matrix_print(a32_matrix_t mat) {
+  // print layout
   for (size_t r = 0; r < mat.rows; r++) {
     printf("[");
-
     for (size_t c = 0; c < mat.cols; c++) {
       printf("%+.3f%s", A32_MAT(mat, r, c), c + 1 < mat.cols ? " " : "");
     }
-
     printf("]\n");
   }
 }

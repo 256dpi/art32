@@ -82,11 +82,10 @@ void a32_vector_norm(a32_vector_t vec) {
 }
 
 void a32_vector_print(a32_vector_t vec) {
+  // print layout
   printf("[");
-
   for (size_t i = 0; i < vec.len; i++) {
-    printf("%+.3f ", vec.values[i]);
+    printf("%+.3f%s", vec.values[i], i + 1 < vec.len ? " " : "");
   }
-
   printf("]\n");
 }
