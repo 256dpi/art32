@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <art32/matrix.h>
+#include <assert.h>
 
 #define TINY 1.0e-20;
 
@@ -165,6 +166,9 @@ a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
 }
 
 void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
+  // assert shape
+  assert(mat.cols == vec.len);
+
   // copy values from vector
   for (size_t c = 0; c < vec.len; c++) {
     A32_MAT(mat, row, c) = vec.values[c];
@@ -172,6 +176,9 @@ void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
 }
 
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
+  // assert shape
+  assert(mat.rows == vec.len);
+
   // copy values from vector
   for (size_t r = 0; r < vec.len; r++) {
     A32_MAT(mat, r, col) = vec.values[r];
@@ -193,6 +200,9 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
 }
 
 a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
+  // assert shape
+  assert(mat1.cols == mat2.rows);
+
   // allocate
   a32_matrix_t out = a32_matrix_new(mat1.rows, mat2.cols);
 
@@ -225,6 +235,9 @@ a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
 }
 
 a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
+  // assert shape
+  assert(mat.rows == mat.cols);
+
   // copy
   a32_matrix_t out = a32_matrix_copy(mat);
   a32_matrix_t temp = a32_matrix_copy(mat);
