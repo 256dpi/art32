@@ -231,6 +231,42 @@ a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   return out;
 }
 
+a32_matrix_t a32_matrix_add(a32_matrix_t mat1, a32_matrix_t mat2) {
+  // assert shape
+  assert(mat1.rows == mat2.rows);
+  assert(mat1.cols == mat2.cols);
+
+  // allocate
+  a32_matrix_t out = a32_matrix_new(mat1.rows, mat1.cols);
+
+  // multiply
+  for (size_t r = 0; r < mat1.rows; r++) {
+    for (size_t c = 0; c < mat2.cols; c++) {
+      A32_MAT(out, r, c) = A32_MAT(mat1, r, c) + A32_MAT(mat2, r, c);
+    }
+  }
+
+  return out;
+}
+
+a32_matrix_t a32_matrix_subtract(a32_matrix_t mat1, a32_matrix_t mat2) {
+  // assert shape
+  assert(mat1.rows == mat2.rows);
+  assert(mat1.cols == mat2.cols);
+
+  // allocate
+  a32_matrix_t out = a32_matrix_new(mat1.rows, mat1.cols);
+
+  // multiply
+  for (size_t r = 0; r < mat1.rows; r++) {
+    for (size_t c = 0; c < mat2.cols; c++) {
+      A32_MAT(out, r, c) = A32_MAT(mat1, r, c) - A32_MAT(mat2, r, c);
+    }
+  }
+
+  return out;
+}
+
 a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   // assert shape
   assert(mat1.cols == mat2.rows);

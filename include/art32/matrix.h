@@ -93,6 +93,24 @@ void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec);
 a32_matrix_t a32_matrix_transpose(a32_matrix_t mat);
 
 /**
+ * Add two matrices.
+ *
+ * @param mat1 The first matrix.
+ * @param mat2 The second matrix.
+ * @return The sum of both matrices.
+ */
+a32_matrix_t a32_matrix_add(a32_matrix_t mat1, a32_matrix_t mat2);
+
+/**
+ * Subtract two matrices.
+ *
+ * @param mat1 The first matrix.
+ * @param mat2 The second matrix.
+ * @return The difference of both matrices.
+ */
+a32_matrix_t a32_matrix_subtract(a32_matrix_t mat1, a32_matrix_t mat2);
+
+/**
  * Calculate the product of two matrices.
  *
  * @param mat1 The first matrix.
