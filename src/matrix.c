@@ -1,5 +1,6 @@
 // Original implementation by Max Kriegleder.
 
+#include <assert.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -8,7 +9,7 @@
 #include <string.h>
 
 #include <art32/matrix.h>
-#include <assert.h>
+#include <art32/vector.h>
 
 #define TINY 1.0e-20;
 
@@ -297,6 +298,25 @@ a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
     for (size_t c = 0; c < mat.cols; c++) {
       A32_MAT(out, r, c) *= scalar;
     }
+  }
+
+  return out;
+}
+
+a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
+  // assert shape
+  assert(vec.len == mat.cols);
+
+  // allocate
+  a32_vector_t out = a32_vector_new(mat.rows);
+
+  // multiply
+  for (size_t r = 0; r < mat.rows; r++) {
+    double sum = 0;
+    for (size_t c = 0; c < vec.len; c++) {
+      sum += A32_MAT(mat, r, c) * vec.values[c];
+    }
+    out.values[r] = sum;
   }
 
   return out;

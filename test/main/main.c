@@ -1,8 +1,9 @@
+#include <esp_log.h>
+
 #include <art32/matrix.h>
 #include <art32/motion.h>
 #include <art32/smooth.h>
 #include <art32/strconv.h>
-#include <esp_log.h>
 
 void app_main() {
   // test smooth

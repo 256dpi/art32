@@ -1,8 +1,9 @@
 #ifndef A32_MATRIX_H
 #define A32_MATRIX_H
 
-#include <art32/vector.h>
 #include <stddef.h>
+
+#include "vector.h"
 
 /**
  * A matrix object.
@@ -127,6 +128,15 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2);
  * @return The calculated matrix.
  */
 a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar);
+
+/**
+ * Multiply a vector with a matrix.
+ *
+ * @param vec The vector.
+ * @param mat The matrix.
+ * @return The product.
+ */
+a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat);
 
 /**
  * Calculates the pseudo inverse of the matrix.
