@@ -142,7 +142,7 @@ void a32_matrix_free(a32_matrix_t mat) {
 }
 
 a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
-  // allocate
+  // allocate result
   a32_matrix_t mat = a32_matrix_new(rows, cols);
 
   // copy values
@@ -213,61 +213,51 @@ void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
 }
 
 a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat.cols, mat.rows);
+  // allocate result
+  a32_matrix_t result = a32_matrix_new(mat.cols, mat.rows);
 
   // transpose
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      A32_MAT(out, c, r) = A32_MAT(mat, r, c);
+      A32_MAT(result, c, r) = A32_MAT(mat, r, c);
     }
   }
 
-  return out;
+  return result;
 }
 
-a32_matrix_t a32_matrix_add(a32_matrix_t mat1, a32_matrix_t mat2) {
+void a32_matrix_add(a32_matrix_t mat, a32_matrix_t add) {
   // assert shape
-  assert(mat1.rows == mat2.rows);
-  assert(mat1.cols == mat2.cols);
-
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat1.rows, mat1.cols);
+  assert(mat.rows == add.rows);
+  assert(mat.cols == add.cols);
 
   // multiply
-  for (size_t r = 0; r < mat1.rows; r++) {
-    for (size_t c = 0; c < mat2.cols; c++) {
-      A32_MAT(out, r, c) = A32_MAT(mat1, r, c) + A32_MAT(mat2, r, c);
+  for (size_t r = 0; r < mat.rows; r++) {
+    for (size_t c = 0; c < add.cols; c++) {
+      A32_MAT(mat, r, c) += A32_MAT(add, r, c);
     }
   }
-
-  return out;
 }
 
-a32_matrix_t a32_matrix_subtract(a32_matrix_t mat1, a32_matrix_t mat2) {
+void a32_matrix_subtract(a32_matrix_t mat, a32_matrix_t sub) {
   // assert shape
-  assert(mat1.rows == mat2.rows);
-  assert(mat1.cols == mat2.cols);
-
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat1.rows, mat1.cols);
+  assert(mat.rows == sub.rows);
+  assert(mat.cols == sub.cols);
 
   // multiply
-  for (size_t r = 0; r < mat1.rows; r++) {
-    for (size_t c = 0; c < mat2.cols; c++) {
-      A32_MAT(out, r, c) = A32_MAT(mat1, r, c) - A32_MAT(mat2, r, c);
+  for (size_t r = 0; r < mat.rows; r++) {
+    for (size_t c = 0; c < sub.cols; c++) {
+      A32_MAT(mat, r, c) -= A32_MAT(sub, r, c);
     }
   }
-
-  return out;
 }
 
 a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
   // assert shape
   assert(mat1.cols == mat2.rows);
 
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat1.rows, mat2.cols);
+  // allocate result
+  a32_matrix_t result = a32_matrix_new(mat1.rows, mat2.cols);
 
   // multiply
   for (size_t r = 0; r < mat1.rows; r++) {
@@ -276,34 +266,28 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
       for (size_t k = 0; k < mat1.cols; k++) {
         sum += A32_MAT(mat1, r, k) * A32_MAT(mat2, k, c);
       }
-      A32_MAT(out, r, c) = sum;
+      A32_MAT(result, r, c) = sum;
     }
   }
 
-  return out;
+  return result;
 }
 
-a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
-  a32_matrix_copy(out, mat);
-
+void a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
   // multiply
   for (size_t r = 0; r < mat.rows; r++) {
     for (size_t c = 0; c < mat.cols; c++) {
-      A32_MAT(out, r, c) *= scalar;
+      A32_MAT(mat, r, c) *= scalar;
     }
   }
-
-  return out;
 }
 
 a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
   // assert shape
   assert(vec.len == mat.cols);
 
-  // allocate
-  a32_vector_t out = a32_vector_new(mat.rows);
+  // allocate result
+  a32_vector_t result = a32_vector_new(mat.rows);
 
   // multiply
   for (size_t r = 0; r < mat.rows; r++) {
@@ -311,10 +295,10 @@ a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
     for (size_t c = 0; c < vec.len; c++) {
       sum += A32_MAT(mat, r, c) * vec.values[c];
     }
-    out.values[r] = sum;
+    result.values[r] = sum;
   }
 
-  return out;
+  return result;
 }
 
 a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {

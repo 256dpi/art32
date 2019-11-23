@@ -109,22 +109,20 @@ void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec);
 a32_matrix_t a32_matrix_transpose(a32_matrix_t mat);
 
 /**
- * Add two matrices.
+ * Add a matrix to a matrix.
  *
- * @param mat1 The first matrix.
- * @param mat2 The second matrix.
- * @return The sum of both matrices.
+ * @param mat The matrix.
+ * @param add The addend.
  */
-a32_matrix_t a32_matrix_add(a32_matrix_t mat1, a32_matrix_t mat2);
+void a32_matrix_add(a32_matrix_t mat, a32_matrix_t add);
 
 /**
- * Subtract two matrices.
+ * Subtract a matrix from a matrix.
  *
- * @param mat1 The first matrix.
- * @param mat2 The second matrix.
- * @return The difference of both matrices.
+ * @param mat The matrix.
+ * @param sub The subtrahend.
  */
-a32_matrix_t a32_matrix_subtract(a32_matrix_t mat1, a32_matrix_t mat2);
+void a32_matrix_subtract(a32_matrix_t mat, a32_matrix_t sub);
 
 /**
  * Calculate the product of two matrices.
@@ -140,9 +138,8 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2);
  *
  * @param mat The matrix.
  * @param scalar The scalar.
- * @return The calculated matrix.
  */
-a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar);
+void a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar);
 
 /**
  * Multiply a vector with a matrix.

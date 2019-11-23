@@ -44,9 +44,9 @@ void a32_vector_copy(a32_vector_t dst, a32_vector_t src) {
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
   // create vector view
-  a32_vector_t out = {.len = length, .values = vec.values + offset};
+  a32_vector_t view = {.len = length, .values = vec.values + offset};
 
-  return out;
+  return view;
 }
 
 double a32_vector_max(a32_vector_t vec) {
