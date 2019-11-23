@@ -18,6 +18,11 @@ a32_vector_t a32_vector_new(size_t length) {
   return vec;
 }
 
+void a32_vector_free(a32_vector_t vec) {
+  // free data
+  free(vec.values);
+}
+
 a32_vector_t a32_vector_use(const double* values, size_t length) {
   // create vector
   a32_vector_t vec = {
@@ -33,11 +38,6 @@ a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
   a32_vector_t out = {.len = length, .values = vec.values + offset};
 
   return out;
-}
-
-void a32_vector_free(a32_vector_t vec) {
-  // free data
-  free(vec.values);
 }
 
 double a32_vector_max(a32_vector_t vec) {

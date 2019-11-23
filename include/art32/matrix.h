@@ -59,12 +59,12 @@ void a32_matrix_free(a32_matrix_t mat);
 a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols);
 
 /**
- * Creates a heap allocated copy of the matrix.
+ * Copy values from one matrix to another.
  *
- * @param mat The matrix.
- * @return The copied matrix.
+ * @param dst The destination matrix.
+ * @param src The source matrix.
  */
-a32_matrix_t a32_matrix_copy(a32_matrix_t mat);
+void a32_matrix_copy(a32_matrix_t dst, a32_matrix_t src);
 
 /**
  * Get a row from the matrix.

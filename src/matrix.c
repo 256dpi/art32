@@ -136,6 +136,11 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   return matrix;
 }
 
+void a32_matrix_free(a32_matrix_t mat) {
+  // free values
+  free(mat.values);
+}
+
 a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
   // allocate
   a32_matrix_t mat = a32_matrix_new(rows, cols);
@@ -146,19 +151,13 @@ a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
   return mat;
 }
 
-void a32_matrix_free(a32_matrix_t mat) {
-  // free values
-  free(mat.values);
-}
-
-a32_matrix_t a32_matrix_copy(a32_matrix_t mat) {
-  // allocate
-  a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
+void a32_matrix_copy(a32_matrix_t dst, a32_matrix_t src) {
+  // assert shape
+  assert(dst.rows == src.rows);
+  assert(dst.cols == src.cols);
 
   // copy values
-  memcpy(out.values, mat.values, sizeof(double) * mat.rows * mat.cols);
-
-  return out;
+  memcpy(dst.values, src.values, sizeof(double) * src.rows * src.cols);
 }
 
 a32_vector_t a32_matrix_get_row(a32_matrix_t mat, size_t row) {
@@ -286,7 +285,8 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
 
 a32_matrix_t a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
   // allocate
-  a32_matrix_t out = a32_matrix_copy(mat);
+  a32_matrix_t out = a32_matrix_new(mat.rows, mat.cols);
+  a32_matrix_copy(out, mat);
 
   // multiply
   for (size_t r = 0; r < mat.rows; r++) {
@@ -321,34 +321,34 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   // assert shape
   assert(mat.rows == mat.cols);
 
-  // copy
-  a32_matrix_t out = a32_matrix_copy(mat);
-  a32_matrix_t temp = a32_matrix_copy(mat);
+  // copy result
+  a32_matrix_t result = a32_matrix_new(mat.rows, mat.cols);
+  a32_matrix_copy(result, mat);
+
+  // copy temp
+  A32_MATRIX_MAKE(temp, mat.rows, mat.cols);
+  a32_matrix_copy(temp, mat);
 
   // decompose
   A32_VECTOR_MAKE(index, mat.rows);
   lu_decompose(temp, index);
 
+  // prepare column
   A32_VECTOR_MAKE(col, mat.rows);
 
+  // invert
   for (size_t j = 0; j < mat.rows; j++) {
     for (size_t i = 0; i < mat.rows; i++) {
       col.values[i] = 0.0;
     }
-
     col.values[j] = 1.0;
-
     lu_back_substitute(temp, index, col);
-
     for (size_t i = 0; i < mat.rows; i++) {
-      A32_MAT(out, i, j) = col.values[i];
+      A32_MAT(result, i, j) = col.values[i];
     }
   }
 
-  // free intermediaries
-  a32_matrix_free(temp);
-
-  return out;
+  return result;
 }
 
 a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
