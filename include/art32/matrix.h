@@ -49,12 +49,12 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols);
 void a32_matrix_free(a32_matrix_t mat);
 
 /**
- * Create a heap allocated matrix from existing values.
+ * Create a matrix from existing values.
  *
  * @param values The values.
  * @param rows The row count.
  * @param cols The column count.
- * @return The allocated matrix.
+ * @return The stack allocated matrix.
  */
 a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols);
 

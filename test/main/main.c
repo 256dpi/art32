@@ -47,7 +47,6 @@ void app_main() {
   ESP_LOGI("matrix", "---");
   a32_matrix_t pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
-  a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
   // test matrix 2x3
@@ -61,7 +60,6 @@ void app_main() {
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
-  a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
   // test matrix 3x3
@@ -76,7 +74,6 @@ void app_main() {
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
-  a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
   // test matrix 3x5z
@@ -91,7 +88,6 @@ void app_main() {
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
-  a32_matrix_free(mat);
   a32_matrix_free(pinv);
 
   // test matrix 5x3z
@@ -104,6 +100,5 @@ void app_main() {
   ESP_LOGI("matrix", "---");
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
-  a32_matrix_free(mat);
   a32_matrix_free(pinv);
 }

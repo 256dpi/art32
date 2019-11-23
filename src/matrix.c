@@ -127,13 +127,13 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   double *values = calloc(sizeof(double), rows * cols);
 
   // prepare matrix
-  a32_matrix_t matrix = {
+  a32_matrix_t mat = {
       .rows = rows,
       .cols = cols,
       .values = values,
   };
 
-  return matrix;
+  return mat;
 }
 
 void a32_matrix_free(a32_matrix_t mat) {
@@ -142,11 +142,12 @@ void a32_matrix_free(a32_matrix_t mat) {
 }
 
 a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols) {
-  // allocate result
-  a32_matrix_t mat = a32_matrix_new(rows, cols);
-
-  // copy values
-  memcpy(mat.values, values, sizeof(double) * rows * cols);
+  // prepare matrix
+  a32_matrix_t mat = {
+      .rows = rows,
+      .cols = cols,
+      .values = (double *)values,
+  };
 
   return mat;
 }
