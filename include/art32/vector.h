@@ -17,9 +17,10 @@ typedef struct {
  * @param length The length.
  * @return A stack allocated vector.
  */
-#define A32_VECTOR_MAKE(name, length)     \
-  double __##name##_values[length] = {0}; \
-  a32_vector_t name = a32_vector_use(__##name##_values, length)
+#define A32_VECTOR_MAKE(name, length)                      \
+  double __##name##_values[(length)];                      \
+  memset(__##name##_values, 0, sizeof(double) * (length)); \
+  a32_vector_t name = a32_vector_use(__##name##_values, (length))
 
 /**
  * Creates a new vector using heap memory.

@@ -17,7 +17,7 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   size_t i_max = 0;
   double big, dum, sum, temp, d;
 
-  a32_vector_t vv = a32_vector_new(mat.cols);
+  A32_VECTOR_MAKE(vv, mat.cols);
   d = 1.0;
 
   for (size_t i = 0; i < mat.rows; i++) {
@@ -30,7 +30,6 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
     }
 
     if (big == 0.0) {
-      a32_vector_free(vv);
       return false;
     }
 
@@ -90,8 +89,6 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
       }
     }
   }
-
-  a32_vector_free(vv);
 
   return true;
 }
@@ -331,10 +328,10 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   a32_matrix_t temp = a32_matrix_copy(mat);
 
   // decompose
-  a32_vector_t index = a32_vector_new(mat.rows);
+  A32_VECTOR_MAKE(index, mat.rows);
   lu_decompose(temp, index);
 
-  a32_vector_t col = a32_vector_new(mat.rows);
+  A32_VECTOR_MAKE(col, mat.rows);
 
   for (size_t j = 0; j < mat.rows; j++) {
     for (size_t i = 0; i < mat.rows; i++) {
@@ -351,8 +348,6 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   }
 
   // free intermediaries
-  a32_vector_free(col);
-  a32_vector_free(index);
   a32_matrix_free(temp);
 
   return out;
