@@ -7,7 +7,7 @@
  * A vector object.
  */
 typedef struct {
-  size_t len;
+  size_t length;
   double *values;
 } a32_vector_t;
 

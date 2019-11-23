@@ -15,7 +15,7 @@ typedef struct {
 } a32_matrix_t;
 
 /**
- * Helper for accessing matrix elements.
+ * Short-hand helper for accessing matrix elements.
  */
 #define A32_MAT(mat, row, col) mat.values[row * mat.cols + col]
 

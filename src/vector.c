@@ -12,7 +12,7 @@ a32_vector_t a32_vector_new(size_t length) {
 
   // create vector
   a32_vector_t vec = {
-      .len = length,
+      .length = length,
       .values = values,
   };
 
@@ -27,7 +27,7 @@ void a32_vector_free(a32_vector_t vec) {
 a32_vector_t a32_vector_use(const double* values, size_t length) {
   // create vector
   a32_vector_t vec = {
-      .len = length,
+      .length = length,
       .values = (double*)values,
   };
 
@@ -36,15 +36,15 @@ a32_vector_t a32_vector_use(const double* values, size_t length) {
 
 void a32_vector_copy(a32_vector_t dst, a32_vector_t src) {
   // assert shape
-  assert(dst.len == src.len);
+  assert(dst.length == src.length);
 
   // copy values
-  memcpy(dst.values, src.values, sizeof(double) * src.len);
+  memcpy(dst.values, src.values, sizeof(double) * src.length);
 }
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
   // create vector view
-  a32_vector_t view = {.len = length, .values = vec.values + offset};
+  a32_vector_t view = {.length = length, .values = vec.values + offset};
 
   return view;
 }
@@ -54,7 +54,7 @@ double a32_vector_max(a32_vector_t vec) {
   double max = vec.values[0];
 
   // find the biggest element
-  for (size_t i = 0; i < vec.len; i++) {
+  for (size_t i = 0; i < vec.length; i++) {
     if (vec.values[i] > max) {
       max = vec.values[i];
     }
@@ -68,7 +68,7 @@ double a32_vector_min(a32_vector_t vec) {
   double min = vec.values[0];
 
   // find the smallest element
-  for (size_t i = 0; i < vec.len; i++) {
+  for (size_t i = 0; i < vec.length; i++) {
     if (vec.values[i] < min) {
       min = vec.values[i];
     }
@@ -82,7 +82,7 @@ double a32_vector_mag(a32_vector_t vec) {
   double sum = 0;
 
   // add products
-  for (size_t i = 0; i < vec.len; i++) {
+  for (size_t i = 0; i < vec.length; i++) {
     sum += (vec.values[i] * vec.values[i]);
   }
 
@@ -99,17 +99,17 @@ void a32_vector_norm(a32_vector_t vec) {
   }
 
   // normalize values
-  for (size_t i = 0; i < vec.len; i++) {
+  for (size_t i = 0; i < vec.length; i++) {
     vec.values[i] = vec.values[i] / mag;
   }
 }
 
 void a32_vector_multiply(a32_vector_t vec1, a32_vector_t vec2) {
   // assert shape
-  assert(vec1.len == vec2.len);
+  assert(vec1.length == vec2.length);
 
   // multiply
-  for (size_t e = 0; e < vec1.len; e++) {
+  for (size_t e = 0; e < vec1.length; e++) {
     vec1.values[e] *= vec2.values[e];
   }
 }
@@ -117,8 +117,8 @@ void a32_vector_multiply(a32_vector_t vec1, a32_vector_t vec2) {
 void a32_vector_print(a32_vector_t vec) {
   // print layout
   printf("[");
-  for (size_t i = 0; i < vec.len; i++) {
-    printf("%+.3f%s", vec.values[i], i + 1 < vec.len ? " " : "");
+  for (size_t i = 0; i < vec.length; i++) {
+    printf("%+.3f%s", vec.values[i], i + 1 < vec.length ? " " : "");
   }
   printf("]\n");
 }

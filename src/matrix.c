@@ -169,7 +169,7 @@ a32_vector_t a32_matrix_get_row(a32_matrix_t mat, size_t row) {
   a32_vector_t vec = a32_vector_new(mat.cols);
 
   // copy values from matrix
-  for (size_t c = 0; c < vec.len; c++) {
+  for (size_t c = 0; c < vec.length; c++) {
     vec.values[c] = A32_MAT(mat, row, c);
   }
 
@@ -184,7 +184,7 @@ a32_vector_t a32_matrix_get_col(a32_matrix_t mat, size_t col) {
   a32_vector_t vec = a32_vector_new(mat.rows);
 
   // copy values from matrix
-  for (size_t r = 0; r < vec.len; r++) {
+  for (size_t r = 0; r < vec.length; r++) {
     vec.values[r] = A32_MAT(mat, r, col);
   }
 
@@ -194,10 +194,10 @@ a32_vector_t a32_matrix_get_col(a32_matrix_t mat, size_t col) {
 void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
   // assert shape
   assert(row < mat.rows);
-  assert(mat.cols == vec.len);
+  assert(mat.cols == vec.length);
 
   // copy values from vector
-  for (size_t c = 0; c < vec.len; c++) {
+  for (size_t c = 0; c < vec.length; c++) {
     A32_MAT(mat, row, c) = vec.values[c];
   }
 }
@@ -205,10 +205,10 @@ void a32_matrix_set_row(a32_matrix_t mat, size_t row, a32_vector_t vec) {
 void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
   // assert shape
   assert(col < mat.cols);
-  assert(mat.rows == vec.len);
+  assert(mat.rows == vec.length);
 
   // copy values from vector
-  for (size_t r = 0; r < vec.len; r++) {
+  for (size_t r = 0; r < vec.length; r++) {
     A32_MAT(mat, r, col) = vec.values[r];
   }
 }
@@ -285,7 +285,7 @@ void a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar) {
 
 a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
   // assert shape
-  assert(vec.len == mat.cols);
+  assert(vec.length == mat.cols);
 
   // allocate result
   a32_vector_t result = a32_vector_new(mat.rows);
@@ -293,7 +293,7 @@ a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
   // multiply
   for (size_t r = 0; r < mat.rows; r++) {
     double sum = 0;
-    for (size_t c = 0; c < vec.len; c++) {
+    for (size_t c = 0; c < vec.length; c++) {
       sum += A32_MAT(mat, r, c) * vec.values[c];
     }
     result.values[r] = sum;
