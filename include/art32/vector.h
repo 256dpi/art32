@@ -12,12 +12,31 @@ typedef struct {
 } a32_vector_t;
 
 /**
- * Creates a new vector.
+ * Creates a new vector using stack memory.
  *
  * @param length The length.
- * @return
+ * @return A stack allocated vector.
+ */
+#define A32_VECTOR_MAKE(name, length)     \
+  double __##name##_values[length] = {0}; \
+  a32_vector_t name = a32_vector_use(__##name##_values, length)
+
+/**
+ * Creates a new vector using heap memory.
+ *
+ * @param length The length.
+ * @return A heap allocated vector.
  */
 a32_vector_t a32_vector_new(size_t length);
+
+/**
+ * Creates a vector from existing values.
+ *
+ * @param values
+ * @param length
+ * @return A stack allocated vector.
+ */
+a32_vector_t a32_vector_use(const double *values, size_t length);
 
 /**
  * Creates a view of another vector without copying.
@@ -31,7 +50,7 @@ a32_vector_t a32_vector_new(size_t length);
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length);
 
 /**
- * Frees a vector.
+ * Frees a heap allocated vector.
  *
  * @param vec The vector.
  */

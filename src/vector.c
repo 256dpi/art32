@@ -6,20 +6,33 @@
 #include <art32/vector.h>
 
 a32_vector_t a32_vector_new(size_t length) {
+  // allocate values
+  double* values = calloc(sizeof(double), length);
+
   // create vector
-  a32_vector_t vector = {
+  a32_vector_t vec = {
       .len = length,
-      .values = calloc(sizeof(double), length),
+      .values = values,
   };
 
-  return vector;
+  return vec;
+}
+
+a32_vector_t a32_vector_use(const double* values, size_t length) {
+  // create vector
+  a32_vector_t vec = {
+      .len = length,
+      .values = (double*)values,
+  };
+
+  return vec;
 }
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
   // create vector view
-  a32_vector_t vector = {.len = length, .values = vec.values + offset};
+  a32_vector_t out = {.len = length, .values = vec.values + offset};
 
-  return vector;
+  return out;
 }
 
 void a32_vector_free(a32_vector_t vec) {
@@ -69,16 +82,16 @@ double a32_vector_mag(a32_vector_t vec) {
 
 void a32_vector_norm(a32_vector_t vec) {
   // get magnitude
-  double m = a32_vector_mag(vec);
+  double mag = a32_vector_mag(vec);
 
   // skip if zero
-  if (m == 0) {
+  if (mag == 0) {
     return;
   }
 
   // normalize values
   for (size_t i = 0; i < vec.len; i++) {
-    vec.values[i] = vec.values[i] / m;
+    vec.values[i] = vec.values[i] / mag;
   }
 }
 
