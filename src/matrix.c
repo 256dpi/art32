@@ -1,5 +1,3 @@
-// Original implementation by Max Kriegleder.
-
 #include <assert.h>
 #include <math.h>
 #include <stdbool.h>
@@ -396,7 +394,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   }
 
   // prepare temporary matrix (without zero row and columns)
-  a32_matrix_t temp = a32_matrix_new(valid_rows, valid_cols);
+  A32_MATRIX_MAKE(temp, valid_rows, valid_cols);
 
   // construct temporary matrix rows
   for (size_t mr = 0; mr < mat.rows; mr++) {
@@ -458,7 +456,6 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   a32_matrix_free(inverse);
   a32_matrix_free(product);
   a32_matrix_free(transpose);
-  a32_matrix_free(temp);
 
   // free maps
   free(col_map);

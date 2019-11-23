@@ -20,7 +20,20 @@ typedef struct {
 #define A32_MAT(mat, row, col) mat.values[row * mat.cols + col]
 
 /**
- * Creates a new matrix.
+ * Creates a new matrix using stack memory.
+ *
+ * @param name The variable name.
+ * @param rows The row count.
+ * @param cols The column count.
+ * @return A stack allocated matrix.
+ */
+#define A32_MATRIX_MAKE(name, rows, columns)                         \
+  double __##name##_values[(rows) * (columns)];                      \
+  memset(__##name##_values, 0, sizeof(double) * (rows) * (columns)); \
+  a32_matrix_t name = a32_matrix_use(__##name##_values, (rows), (columns))
+
+/**
+ * Creates a new matrix using heap memory.
  *
  * @param rows The row count.
  * @param cols The column count.
@@ -29,7 +42,14 @@ typedef struct {
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols);
 
 /**
- * Create a matrix from a two dimensional array.
+ * Frees a heap allocated matrix.
+ *
+ * @param mat The matrix.
+ */
+void a32_matrix_free(a32_matrix_t mat);
+
+/**
+ * Create a heap allocated matrix from existing values.
  *
  * @param values The values.
  * @param rows The row count.
@@ -39,12 +59,7 @@ a32_matrix_t a32_matrix_new(size_t rows, size_t cols);
 a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols);
 
 /**
- * Frees a matrix.
- */
-void a32_matrix_free(a32_matrix_t);
-
-/**
- * Copy matrix.
+ * Creates a heap allocated copy of the matrix.
  *
  * @param mat The matrix.
  * @return The copied matrix.

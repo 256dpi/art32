@@ -14,6 +14,7 @@ typedef struct {
 /**
  * Creates a new vector using stack memory.
  *
+ * @param name The variable name.
  * @param length The length.
  * @return A stack allocated vector.
  */
@@ -29,6 +30,13 @@ typedef struct {
  * @return A heap allocated vector.
  */
 a32_vector_t a32_vector_new(size_t length);
+
+/**
+ * Frees a heap allocated vector.
+ *
+ * @param vec The vector.
+ */
+void a32_vector_free(a32_vector_t vec);
 
 /**
  * Creates a vector from existing values.
@@ -49,13 +57,6 @@ a32_vector_t a32_vector_use(const double *values, size_t length);
  */
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length);
-
-/**
- * Frees a heap allocated vector.
- *
- * @param vec The vector.
- */
-void a32_vector_free(a32_vector_t vec);
 
 /**
  * Find the biggest value.
