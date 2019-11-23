@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <art32/vector.h>
 
@@ -31,6 +32,14 @@ a32_vector_t a32_vector_use(const double* values, size_t length) {
   };
 
   return vec;
+}
+
+void a32_vector_copy(a32_vector_t dst, a32_vector_t src) {
+  // assert shape
+  assert(dst.len == src.len);
+
+  // copy values
+  memcpy(dst.values, src.values, sizeof(double) * src.len);
 }
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {

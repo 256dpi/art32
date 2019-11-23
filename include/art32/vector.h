@@ -48,6 +48,14 @@ void a32_vector_free(a32_vector_t vec);
 a32_vector_t a32_vector_use(const double *values, size_t length);
 
 /**
+ * Copy values from one vector to another.
+ *
+ * @param dst The destination vector.
+ * @param src The source vector.
+ */
+void a32_vector_copy(a32_vector_t dst, a32_vector_t src);
+
+/**
  * Creates a view of another vector without copying.
  *
  * @param vec The vector.
