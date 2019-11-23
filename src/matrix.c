@@ -337,23 +337,26 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
 }
 
 a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
+  // get input
+  a32_matrix_t input = mat;
+
   // flip if tall
   bool flipped = false;
-  if (mat.rows > mat.cols) {
-    mat = a32_matrix_transpose(mat);
+  if (input.rows > input.cols) {
+    input = a32_matrix_transpose(input);
     flipped = true;
   }
 
   // prepare maps for valid rows and columns
-  size_t *row_map = calloc(sizeof(size_t), mat.rows);
-  size_t *col_map = calloc(sizeof(size_t), mat.cols);
+  size_t row_map[input.rows];
+  size_t col_map[input.cols];
 
   // set row map and collect valid rows
   size_t valid_rows = 0;
-  for (size_t r = 0; r < mat.rows; r++) {
+  for (size_t r = 0; r < input.rows; r++) {
     row_map[r] = SIZE_MAX;
-    for (size_t c = 0; c < mat.cols; c++) {
-      if (A32_MAT(mat, r, c) != 0) {
+    for (size_t c = 0; c < input.cols; c++) {
+      if (A32_MAT(input, r, c) != 0) {
         row_map[r] = 0;
       }
     }
@@ -365,10 +368,10 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
 
   // set column map and collect valid columns
   size_t valid_cols = 0;
-  for (size_t c = 0; c < mat.cols; c++) {
+  for (size_t c = 0; c < input.cols; c++) {
     col_map[c] = SIZE_MAX;
-    for (size_t r = 0; r < mat.rows; r++) {
-      if (A32_MAT(mat, r, c) != 0) {
+    for (size_t r = 0; r < input.rows; r++) {
+      if (A32_MAT(input, r, c) != 0) {
         col_map[c] = 0;
       }
     }
@@ -382,14 +385,14 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   A32_MATRIX_MAKE(temp, valid_rows, valid_cols);
 
   // construct temporary matrix rows
-  for (size_t mr = 0; mr < mat.rows; mr++) {
+  for (size_t mr = 0; mr < input.rows; mr++) {
     // skip if zero
     if (row_map[mr] == SIZE_MAX) {
       continue;
     }
 
     // construct temporary matrix columns
-    for (size_t mc = 0; mc < mat.cols; mc++) {
+    for (size_t mc = 0; mc < input.cols; mc++) {
       // skip if zero
       if (col_map[mc] == SIZE_MAX) {
         continue;
@@ -398,7 +401,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
       // copy value
       size_t tr = row_map[mr];
       size_t tc = col_map[mc];
-      A32_MAT(temp, tr, tc) = A32_MAT(mat, mr, mc);
+      A32_MAT(temp, tr, tc) = A32_MAT(input, mr, mc);
     }
   }
 
@@ -415,7 +418,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   a32_matrix_t output = a32_matrix_multiply(transpose, inverse);
 
   // construct final matrix (with zero rows and columns)
-  a32_matrix_t final = a32_matrix_new(mat.cols, mat.rows);
+  a32_matrix_t final = a32_matrix_new(input.cols, input.rows);
 
   // construct final matrix rows
   for (size_t fr = 0; fr < final.rows; fr++) {
@@ -442,10 +445,6 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   a32_matrix_free(product);
   a32_matrix_free(transpose);
 
-  // free maps
-  free(col_map);
-  free(row_map);
-
   // get result
   a32_matrix_t result = final;
 
@@ -453,7 +452,7 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   if (flipped) {
     result = a32_matrix_transpose(final);
     a32_matrix_free(final);
-    a32_matrix_free(mat);
+    a32_matrix_free(input);
   }
 
   return result;
