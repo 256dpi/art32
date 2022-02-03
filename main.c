@@ -1,7 +1,9 @@
 #include <printf.h>
+#include <string.h>
 
 #include "art32/matrix.h"
 #include "art32/motion.h"
+#include "art32/parser.h"
 #include "art32/smooth.h"
 #include "art32/strconv.h"
 
@@ -103,4 +105,46 @@ int main() {
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
+
+  /* parser test */
+
+  // prepare string
+  char * source = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
+
+  // prepare parser
+  a32_def_t defs[] = {
+          {
+                  .id = 0,
+                  .name = "FOO",
+                  .fmt = "ifs",
+          },
+          {
+            .id = 1,
+            .name = "BAR",
+            .fmt = "",
+          }
+  };
+  a32_parser_t p = {
+          .source = source,
+          .defs = defs,
+          .num_defs = sizeof(defs) / sizeof(a32_def_t),
+  };
+
+  // log
+  printf("parser:\n");
+
+  // parse codes
+  a32_code_t code;
+  while (a32_parser_next(&p, &code)) {
+    // handle codes
+    switch (code.def->id) {
+      case 0:
+        printf("%s: %d, %f, %s\n", code.def->name, code.args[0].i, code.args[1].f, code.args[2].s);
+        break;
+      case 1:
+        printf("%s\n", code.def->name);
+      default:
+        break;
+    }
+  }
 }
