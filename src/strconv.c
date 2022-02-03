@@ -1,5 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+char* a32_trim(char* str) {
+  // skip whitespace
+  while (str[0] == ' ') {
+    str++;
+  }
+
+  // clear whitespace
+  size_t len = strlen(str);
+  while (str[len - 1] == ' ') {
+    str[len - 1] = '\0';
+    len--;
+  }
+
+  return str;
+}
 
 const char* a32_d2str(double num) {
   static char str[16] = {0};

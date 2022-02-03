@@ -2,6 +2,16 @@
 #define A32_STRCONV_H
 
 /**
+ * Trim leading and trailing whitespace of a string.
+ *
+ * Note: The function will modify the passed string.
+ *
+ * @param str The source string.
+ * @return The trimmed string
+ */
+char* a32_trim(char* str);
+
+/**
  * Returns a string containing the value with 4 decimals.
  *
  * Note: The returned pointer is altered on the next call.
