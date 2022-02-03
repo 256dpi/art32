@@ -48,8 +48,8 @@ typedef struct {
   a32_arg_t args[8];
 } a32_code_t;
 
-#define A32_PARSER_MAKE(name, source, defs) \
-  a32_parser_t name = {.source = source, .defs = defs, .num_defs = sizeof(defs) / sizeof(a32_def_t)}
+#define A32_PARSER_MAKE(name, _source, _defs) \
+  a32_parser_t name = {.source = _source, .defs = _defs, .num_defs = sizeof(_defs) / sizeof(a32_def_t)}
 
 /**
  * Will advance the parser to the next code and decode it.
