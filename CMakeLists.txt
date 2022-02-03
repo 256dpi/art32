@@ -29,3 +29,4 @@ set(SOURCE_FILES
         main.c)
 
 add_executable(art32 ${SOURCE_FILES})
+target_link_libraries(art32 m) # math.h
