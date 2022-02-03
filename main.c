@@ -108,10 +108,13 @@ int main() {
 
   /* parser test */
 
+  // log
+  printf("parser:\n");
+
   // prepare string
   char * source = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
 
-  // prepare parser
+  // prepare defs
   a32_def_t defs[] = {
           {
                   .id = 0,
@@ -124,17 +127,10 @@ int main() {
             .fmt = "",
           }
   };
-  a32_parser_t p = {
-          .source = source,
-          .defs = defs,
-          .num_defs = sizeof(defs) / sizeof(a32_def_t),
-  };
-
-  // log
-  printf("parser:\n");
 
   // parse codes
   a32_code_t code;
+  A32_PARSER_MAKE(p, source, defs);
   while (a32_parser_next(&p, &code)) {
     // handle codes
     switch (code.def->id) {
