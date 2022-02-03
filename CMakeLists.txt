@@ -24,6 +24,6 @@ set(SOURCE_FILES
         src/smooth.c
         src/strconv.c
         src/vector.c
-        test/main/main.c)
+        main.c)
 
-add_library(art32 ${SOURCE_FILES})
+add_executable(art32 ${SOURCE_FILES})
