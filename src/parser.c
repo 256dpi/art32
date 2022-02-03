@@ -1,5 +1,4 @@
 #include <string.h>
-#include <printf.h>
 
 #include "art32/parser.h"
 #include "art32/strconv.h"
