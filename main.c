@@ -15,7 +15,7 @@ int main() {
 
   // test strconv
   printf("d2str: %s (10.0000)\n", a32_d2str(10.0));
-  printf("f2str: %s (10.0000)\n", a32_f2str(10.0));
+  printf("f2str: %s (10.0000)\n", a32_f2str(10.0f));
   printf("l2str: %s (10)\n", a32_l2str(10));
   printf("i2str: %s (10)\n", a32_i2str(10));
   printf("str2d: %.4f (10.0000)\n", a32_str2d("10.0"));
@@ -35,6 +35,8 @@ int main() {
   printf("motion: %s (10)\n", a32_d2str(motion.position));
   a32_motion_update(&motion, 100, 1);
   printf("motion: %s (15)\n", a32_d2str(motion.position));
+
+  /* matrix tests */
 
   // test matrix 2x3
   printf("matrix: test 2x2\n");
