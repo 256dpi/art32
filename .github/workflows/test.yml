@@ -8,6 +8,4 @@ jobs:
         uses: actions/checkout@v2
       - name: Test
         run: |
-          cmake .
-          make
-          ./art32
+          make test
