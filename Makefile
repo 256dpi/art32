@@ -1,5 +1,5 @@
 test:
-	gcc -lm -Iinclude src/*.c main.c
+	gcc -Iinclude src/*.c main.c -lm
 	./a.out
 	rm a.out
 
