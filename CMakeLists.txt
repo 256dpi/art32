@@ -1,32 +1,5 @@
-cmake_minimum_required(VERSION 3.7)
-project(art32)
+file(GLOB srcs ./src/*.c)
 
-set(CMAKE_C_STANDARD 99)
-
-include_directories(
-        test/build/include
-        test/xtensa-esp32-elf/xtensa-esp32-elf/include
-        test/esp-idf/components/esp32/include
-        test/esp-idf/components/freertos/include
-        test/esp-idf/components/log/include
-        include/)
-
-set(SOURCE_FILES
-        include/art32/matrix.h
-        include/art32/motion.h
-        include/art32/numbers.h
-        include/art32/parser.h
-        include/art32/smooth.h
-        include/art32/strconv.h
-        include/art32/vector.h
-        src/matrix.c
-        src/motion.c
-        src/numbers.c
-        src/parser.c
-        src/smooth.c
-        src/strconv.c
-        src/vector.c
-        main.c)
-
-add_executable(art32 ${SOURCE_FILES})
-target_link_libraries(art32 m) # math.h
+idf_component_register(SRCS ${srcs}
+    INCLUDE_DIRS "include"
+)
