@@ -59,6 +59,9 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
       continue;
     }
 
+    // set offset
+    c->off = code_token - p->source;
+
     // set def
     c->def = def;
 

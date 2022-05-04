@@ -44,6 +44,7 @@ typedef struct {
  * A single parsed code.
  */
 typedef struct {
+  size_t off;
   a32_def_t* def;
   a32_arg_t args[8];
 } a32_code_t;

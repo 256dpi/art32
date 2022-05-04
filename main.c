@@ -135,10 +135,10 @@ int main() {
     // handle codes
     switch (code.def->id) {
       case 0:
-        printf("%s: %d, %f, %s\n", code.def->name, code.args[0].i, code.args[1].f, code.args[2].s);
+        printf("%s @ %ld:, %d, %f, %s\n", code.def->name, code.off, code.args[0].i, code.args[1].f, code.args[2].s);
         break;
       case 1:
-        printf("%s\n", code.def->name);
+        printf("%s @ %ld\n", code.def->name, code.off);
       default:
         break;
     }
