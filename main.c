@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "art32/filter.h"
 #include "art32/matrix.h"
 #include "art32/motion.h"
 #include "art32/parser.h"
@@ -14,6 +15,16 @@ int main() {
   printf("smooth: %f %f %f (7.5000, 5.0000, 10.0000)\n", a32_smooth_update(smooth, 10), smooth->min, smooth->max);
   printf("smooth: %f %f %f (10.0000, 5.0000, 15.0000)\n", a32_smooth_update(smooth, 15), smooth->min, smooth->max);
   a32_smooth_free(smooth);
+
+  // test filter
+  a32_filter_t* filter = a32_filter_new(5);
+  printf("filter: %f (5.0000)\n", a32_filter_update(filter, 5));
+  printf("filter: %f (5.0000)\n", a32_filter_update(filter, 5));
+  printf("filter: %f (5.0000)\n", a32_filter_update(filter, 15));
+  printf("filter: %f (7.5000)\n", a32_filter_update(filter, 10));
+  printf("filter: %f (10.0000)\n", a32_filter_update(filter, 15));
+  printf("filter: %f (15.0000)\n", a32_filter_update(filter, 15));
+  a32_filter_free(filter);
 
   // test strconv
   printf("d2str: %s (10.0000)\n", a32_d2str(10.0));
