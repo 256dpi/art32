@@ -6,59 +6,60 @@
 
 a32_filter_t *a32_filter_new(size_t num) {
   // allocate object
-  a32_filter_t *s = (a32_filter_t *)malloc(sizeof(a32_filter_t));
-  memset(s, 0, sizeof(a32_filter_t));
+  a32_filter_t *f = (a32_filter_t *)malloc(sizeof(a32_filter_t));
+  memset(f, 0, sizeof(a32_filter_t));
 
   // allocate history
-  s->values = calloc(sizeof(double), num);
-  s->sorted = calloc(sizeof(double), num);
-  s->num = num;
+  f->values = calloc(sizeof(double), num);
+  f->sorted = calloc(sizeof(double), num);
+  f->num = num;
 
-  return s;
+  return f;
 }
 
-double a32_filter_update(a32_filter_t *s, double v) {
+double a32_filter_update(a32_filter_t *f, double v) {
   // save reading
-  s->values[s->index] = v;
+  f->values[f->index] = v;
 
   // increment index and wrap around
-  s->index++;
-  if (s->index >= s->num) {
-    s->index = 0;
+  f->index++;
+  if (f->index >= f->num) {
+    f->index = 0;
   }
 
   // update count
-  if (s->count < s->num) {
-    s->count++;
+  if (f->count < f->num) {
+    f->count++;
   }
 
   // sort values
-  memcpy(s->sorted, s->values, sizeof(double) * s->num);
-  int i, element, j;
-  for (i = 1; i < s->count; i++) {
-    element = s->sorted[i];
+  memcpy(f->sorted, f->values, sizeof(double) * f->num);
+  int i, j;
+  double element;
+  for (i = 1; i < f->count; i++) {
+    element = f->sorted[i];
     j = i - 1;
-    while (j >= 0 && s->sorted[j] > element) {
-      s->sorted[j + 1] = s->sorted[j];
+    while (j >= 0 && f->sorted[j] > element) {
+      f->sorted[j + 1] = f->sorted[j];
       j = j - 1;
     }
-    s->sorted[j + 1] = element;
+    f->sorted[j + 1] = element;
   }
 
   // return middle number if odd
-  if (s->count % 2 == 1) {
-    return s->sorted[s->count / 2];
+  if (f->count % 2 == 1) {
+    return f->sorted[f->count / 2];
   }
 
   // otherwise, average
-  return (s->sorted[s->count / 2 - 1] + s->sorted[s->count / 2]) / 2;
+  return (f->sorted[f->count / 2 - 1] + f->sorted[f->count / 2]) / 2;
 }
 
-void a32_filter_free(a32_filter_t *s) {
+void a32_filter_free(a32_filter_t *f) {
   // free history
-  free(s->values);
-  free(s->sorted);
+  free(f->values);
+  free(f->sorted);
 
   // free object
-  free(s);
+  free(f);
 }
