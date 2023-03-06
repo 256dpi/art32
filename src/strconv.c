@@ -18,15 +18,9 @@ char* a32_trim(char* str) {
   return str;
 }
 
-const char* a32_d2str(double num) {
+const char* a32_i2str(int32_t num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%.4f", num);
-  return str;
-}
-
-const char* a32_f2str(float num) {
-  static char str[32] = {0};
-  snprintf(str, 32, "%.4f", num);
+  snprintf(str, 32, "%d", num);
   return str;
 }
 
@@ -36,16 +30,22 @@ const char* a32_l2str(int64_t num) {
   return str;
 }
 
-const char* a32_i2str(int32_t num) {
+const char* a32_f2str(float num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%d", num);
+  snprintf(str, 32, "%.4f", num);
   return str;
 }
 
-double a32_str2d(const char* str) { return strtod(str, NULL); }
+const char* a32_d2str(double num) {
+  static char str[32] = {0};
+  snprintf(str, 32, "%.4f", num);
+  return str;
+}
 
-float a32_str2f(const char* str) { return strtof(str, NULL); }
+int32_t a32_str2i(const char* str) { return strtol(str, NULL, 10); }
 
 int64_t a32_str2l(const char* str) { return strtoll(str, NULL, 10); }
 
-int32_t a32_str2i(const char* str) { return strtol(str, NULL, 10); }
+float a32_str2f(const char* str) { return strtof(str, NULL); }
+
+double a32_str2d(const char* str) { return strtod(str, NULL); }
