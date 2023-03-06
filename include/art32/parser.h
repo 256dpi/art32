@@ -36,6 +36,7 @@ typedef struct {
   char type;
 
   union {
+    uint8_t o;
     int32_t i;
     int64_t l;
     float f;

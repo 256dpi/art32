@@ -42,6 +42,20 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
     // parse arguments
     for (int i = 0; def->fmt[i] != 0; i++) {
       switch (def->fmt[i]) {
+        case 'o': {
+          // check size
+          if (p->length - p->off < 1) {
+            return false;
+          }
+
+          // set value
+          c->args[i].o = p->source[p->off];
+
+          // increment
+          p->off += 1;
+
+          break;
+        }
         case 'i': {
           // check size
           if (p->length - p->off < 4) {
@@ -188,6 +202,9 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
     size_t i = 0;
     while (arg_token != NULL) {
       switch (def->fmt[i]) {
+        case 'o':
+          c->args[i].o = (uint8_t)a32_str2i(arg_token);
+          break;
         case 'i':
           c->args[i].i = a32_str2i(arg_token);
           break;

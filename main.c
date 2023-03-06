@@ -123,11 +123,11 @@ int main() {
   a32_def_t defs[] = {
       {.num = 0, .name = "FOO", .fmt = "ifs"},
       {.num = 1, .name = "BAR", .fmt = ""},
-      {.num = 2, .name = "BAZ", .fmt = "ld"},
+      {.num = 2, .name = "BAZ", .fmt = "old"},
   };
 
   // prepare string source
-  char* source1 = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
+  char* source1 = strdup("FOO 1 2.0 foo; FOO\nBAR\nBAZ 7 1 2.0");
 
   // parse string source
   printf("parser (string):\n");
@@ -142,6 +142,9 @@ int main() {
       case 1:
         printf("%s @ %ld\n", code.def->name, code.off);
         break;
+      case 2:
+        printf("%s @ %ld: %u, %lld, %f\n", code.def->name, code.off, code.args[0].o, code.args[1].l, code.args[2].d);
+        break;
       default:
         break;
     }
@@ -155,6 +158,7 @@ int main() {
       'f',  'o',  'o',  0x0,                           // string
       0x01,                                            // code
       0x02,                                            // code
+      0x07,                                            // octet
       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // long
       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,  // double
   };
@@ -172,7 +176,7 @@ int main() {
         printf("%s @ %ld\n", code.def->name, code.off);
         break;
       case 2:
-        printf("%s @ %ld: %lld, %f\n", code.def->name, code.off, code.args[0].l, code.args[1].d);
+        printf("%s @ %ld: %u, %lld, %f\n", code.def->name, code.off, code.args[0].o, code.args[1].l, code.args[2].d);
         break;
       default:
         break;
