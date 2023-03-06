@@ -119,29 +119,61 @@ int main() {
 
   /* parser test */
 
-  // log
-  printf("parser:\n");
-
-  // prepare string
-  char* source = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
-
   // prepare defs
   a32_def_t defs[] = {
-      {.id = 0, .name = "FOO", .fmt = "ifs"},
-      {.id = 1, .name = "BAR", .fmt = ""},
+      {.num = 0, .name = "FOO", .fmt = "ifs"},
+      {.num = 1, .name = "BAR", .fmt = ""},
+      {.num = 2, .name = "BAZ", .fmt = "ld"},
   };
 
-  // parse codes
+  // prepare string source
+  char* source1 = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
+
+  // parse string source
+  printf("parser (string):\n");
   a32_code_t code;
-  A32_PARSER_MAKE(p, source, defs);
-  while (a32_parser_next(&p, &code)) {
+  A32_PARSER_MAKE(p1, source1, defs);
+  while (a32_parser_next(&p1, &code)) {
     // handle codes
-    switch (code.def->id) {
+    switch (code.def->num) {
       case 0:
-        printf("%s @ %ld:, %d, %f, %s\n", code.def->name, code.off, code.args[0].i, code.args[1].f, code.args[2].s);
+        printf("%s @ %ld: %d, %f, %s\n", code.def->name, code.off, code.args[0].i, code.args[1].f, code.args[2].s);
         break;
       case 1:
         printf("%s @ %ld\n", code.def->name, code.off);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // prepare binary source
+  uint8_t source2[] = {
+      0x00,                                            // code
+      0x01, 0x00, 0x00, 0x00,                          // int
+      0x00, 0x00, 0x00, 0x40,                          // float
+      'f',  'o',  'o',  0x0,                           // string
+      0x01,                                            // code
+      0x02,                                            // code
+      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // long
+      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,  // double
+  };
+
+  // parse binary source
+  printf("parser (binary):\n");
+  A32_PARSER_MAKE_BINARY(p2, source2, sizeof(source2), defs);
+  while (a32_parser_next(&p2, &code)) {
+    // handle codes
+    switch (code.def->num) {
+      case 0:
+        printf("%s @ %ld: %d, %f, %s\n", code.def->name, code.off, code.args[0].i, code.args[1].f, code.args[2].s);
+        break;
+      case 1:
+        printf("%s @ %ld\n", code.def->name, code.off);
+        break;
+      case 2:
+        printf("%s @ %ld: %lld, %f\n", code.def->name, code.off, code.args[0].l, code.args[1].d);
+        break;
       default:
         break;
     }

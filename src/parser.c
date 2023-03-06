@@ -7,6 +7,115 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
   // clear code
   memset(c, 0, sizeof(a32_code_t));
 
+  // parse binary
+  if (p->binary) {
+    // check offset
+    if (p->off >= p->length) {
+      return false;
+    }
+
+    // get num
+    uint8_t num = p->source[p->off];
+
+    // find def
+    a32_def_t* def = NULL;
+    for (size_t i = 0; i < p->num_defs; i++) {
+      if (num == p->defs[i].num) {
+        def = &p->defs[i];
+      }
+    }
+
+    // stop at unknown code
+    if (def == NULL) {
+      return false;
+    }
+
+    // set offset
+    c->off = p->off;
+
+    // set def
+    c->def = def;
+
+    // increment
+    p->off++;
+
+    // parse arguments
+    for (int i = 0; def->fmt[i] != 0; i++) {
+      switch (def->fmt[i]) {
+        case 'i': {
+          // check size
+          if (p->length - p->off < 4) {
+            return false;
+          }
+
+          // set value
+          c->args[i].i = *((int32_t*)(p->source + p->off));
+
+          // increment
+          p->off += 4;
+
+          break;
+        }
+        case 'l': {
+          // check size
+          if (p->length - p->off < 8) {
+            return false;
+          }
+
+          // set value
+          c->args[i].l = *((int64_t*)(p->source + p->off));
+
+          // increment
+          p->off += 8;
+
+          break;
+        }
+        case 'f': {
+          // check size
+          if (p->length - p->off < 4) {
+            return false;
+          }
+
+          // set value
+          c->args[i].f = *((float*)(p->source + p->off));
+
+          // increment
+          p->off += 4;
+
+          break;
+        }
+        case 'd': {
+          // check size
+          if (p->length - p->off < 8) {
+            return false;
+          }
+
+          // set value
+          c->args[i].d = *((double*)(p->source + p->off));
+
+          // increment
+          p->off += 8;
+
+          break;
+        }
+        case 's': {
+          // get length
+          size_t len = strlen((char*)(p->source + p->off));
+
+          // set value
+          c->args[i].s = (char*)(p->source + p->off);
+
+          // increment
+          p->off += len + 1;
+
+          break;
+        }
+      }
+    }
+
+    return true;
+  }
+
   // prepare code token
   char* code_token = NULL;
 
@@ -14,7 +123,7 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
   while (true) {
     // get first or next token
     if (!p->init) {
-      code_token = strtok_r(p->source, ";\n", &p->cache);
+      code_token = strtok_r((char*)p->source, ";\n", &p->cache);
       p->init = true;
     } else {
       code_token = strtok_r(NULL, ";\n", &p->cache);
@@ -60,7 +169,7 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
     }
 
     // set offset
-    c->off = code_token - p->source;
+    c->off = code_token - (char*)p->source;
 
     // set def
     c->def = def;

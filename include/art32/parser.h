@@ -1,13 +1,14 @@
 #ifndef A32_PARSER_H
 #define A32_PARSER_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
 /**
  * A parser definition.
  */
 typedef struct {
-  int id;            // 1
+  int num;           // 1
   const char* name;  // "FOO"
   const char* fmt;   // "ifs"
 } a32_def_t;
@@ -16,13 +17,16 @@ typedef struct {
  * The parser object.
  */
 typedef struct {
-  char* source;
+  uint8_t* source;
   a32_def_t* defs;
   int num_defs;
+  bool binary;
+  size_t length;  // binary
   // private:
   bool init;
   char* token;
   char* cache;
+  size_t off;  // binary
 } a32_parser_t;
 
 /**
@@ -50,7 +54,14 @@ typedef struct {
 } a32_code_t;
 
 #define A32_PARSER_MAKE(name, _source, _defs) \
-  a32_parser_t name = {.source = _source, .defs = _defs, .num_defs = sizeof(_defs) / sizeof(a32_def_t)}
+  a32_parser_t name = {.source = (void*)_source, .defs = _defs, .num_defs = sizeof(_defs) / sizeof(a32_def_t)}
+
+#define A32_PARSER_MAKE_BINARY(name, _source, _length, _defs)         \
+  a32_parser_t name = {.source = _source,                             \
+                       .defs = _defs,                                 \
+                       .num_defs = sizeof(_defs) / sizeof(a32_def_t), \
+                       .binary = true,                                \
+                       .length = _length}
 
 /**
  * Will advance the parser to the next code and decode it.
