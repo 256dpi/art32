@@ -32,8 +32,8 @@ typedef struct {
   char type;
 
   union {
-    int i;
-    long l;
+    int32_t i;
+    int64_t l;
     float f;
     double d;
     char* s;
