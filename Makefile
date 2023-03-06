@@ -4,4 +4,4 @@ test:
 	rm a.out
 
 fmt:
-	clang-format -i ./src/*.c ./include/art32/*.h -style="{BasedOnStyle: Google, ColumnLimit: 120, SortIncludes: false}"
+	clang-format -i ./main.c ./src/*.c ./include/art32/*.h -style="{BasedOnStyle: Google, ColumnLimit: 120, SortIncludes: false}"

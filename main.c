@@ -123,20 +123,12 @@ int main() {
   printf("parser:\n");
 
   // prepare string
-  char * source = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
+  char* source = strdup("FOO 1 2.0 foo; FOO\nBAR\n");
 
   // prepare defs
   a32_def_t defs[] = {
-          {
-                  .id = 0,
-                  .name = "FOO",
-                  .fmt = "ifs",
-          },
-          {
-            .id = 1,
-            .name = "BAR",
-            .fmt = "",
-          }
+      {.id = 0, .name = "FOO", .fmt = "ifs"},
+      {.id = 1, .name = "BAR", .fmt = ""},
   };
 
   // parse codes
