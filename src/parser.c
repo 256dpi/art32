@@ -3,9 +3,9 @@
 #include "art32/parser.h"
 #include "art32/strconv.h"
 
-bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
+bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
   // clear code
-  memset(c, 0, sizeof(a32_code_t));
+  memset(c, 0, sizeof(a32_parser_code_t));
 
   // parse binary
   if (p->binary) {
@@ -18,7 +18,7 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
     uint8_t num = p->source[p->off];
 
     // find def
-    a32_def_t* def = NULL;
+    a32_parser_def_t* def = NULL;
     for (size_t i = 0; i < p->num_defs; i++) {
       if (num == p->defs[i].num) {
         def = &p->defs[i];
@@ -170,7 +170,7 @@ bool a32_parser_next(a32_parser_t* p, a32_code_t* c) {
     char* arg_token = strtok_r(code_token, " ", &cache);
 
     // find def
-    a32_def_t* def = NULL;
+    a32_parser_def_t* def = NULL;
     for (size_t i = 0; i < p->num_defs; i++) {
       if (strcmp(p->defs[i].name, arg_token) == 0) {
         def = &p->defs[i];
