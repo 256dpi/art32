@@ -37,9 +37,9 @@ static a32_parser_err_t first_bin_err(uint8_t* source, size_t len) {
 
 TEST(Parser, String) {
   a32_parser_code_t code;
-  char* source = strdup("FOO 1 2.3 foo; FOO\nBAR\nBAZ 7 1 1.4; QUZ quz");
+  char* source = strdup("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz");
   A32_PARSER_MAKE(p, source, defs);
-  for (int i = 0; a32_parser_next(&p, &code); i++) {
+  for (int i = 0; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
     switch (i) {
       case 0:
         ASSERT_EQ(code.off, 0);
@@ -53,18 +53,18 @@ TEST(Parser, String) {
         ASSERT_EQ(code.def, &defs[0]);
         break;
       case 2:
-        ASSERT_EQ(code.off, 19);
+        ASSERT_EQ(code.off, 26);
         ASSERT_EQ(code.def, &defs[1]);
         break;
       case 3:
-        ASSERT_EQ(code.off, 23);
+        ASSERT_EQ(code.off, 30);
         ASSERT_EQ(code.def, &defs[2]);
         ASSERT_EQ(code.args[0].o, 7);
         ASSERT_EQ(code.args[1].l, 1);
         ASSERT_EQ(code.args[2].d, 1.4);
         break;
       case 4:
-        ASSERT_EQ(code.off, 36);
+        ASSERT_EQ(code.off, 43);
         ASSERT_EQ(code.def, &defs[3]);
         ASSERT_STREQ(code.args[0].s, "quz");
         break;
@@ -102,7 +102,7 @@ TEST(Parser, Binary) {
 
   a32_parser_code_t code;
   A32_PARSER_MAKE_BINARY(p, source, sizeof(source), defs);
-  for (int i = 0; a32_parser_next(&p, &code); i++) {
+  for (int i = 0; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
     switch (i) {
       case 0:
         ASSERT_EQ(code.off, 0);
