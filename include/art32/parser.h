@@ -32,17 +32,13 @@ typedef struct {
 /**
  * A single parsed argument.
  */
-typedef struct {
-  char type;
-
-  union {
-    uint8_t o;
-    int32_t i;
-    int64_t l;
-    float f;
-    double d;
-    char* s;
-  };
+typedef union {
+  uint8_t o;
+  int32_t i;
+  int64_t l;
+  float f;
+  double d;
+  char* s;
 } a32_parser_arg_t;
 
 typedef enum {
