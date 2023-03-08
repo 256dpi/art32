@@ -1,8 +1,5 @@
 #include <stdio.h>
-#include <string.h>
-
 #include <art32/matrix.h>
-#include <art32/parser.h>
 
 int main(void) {
   /* matrix tests */
@@ -72,79 +69,4 @@ int main(void) {
   pinv = a32_matrix_pseudo_inverse(mat);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
-
-  /* parser test */
-
-  // prepare defs
-  a32_parser_def_t defs[] = {
-      {.num = 0, .name = "FOO", .fmt = "ifs"},
-      {.num = 1, .name = "BAR", .fmt = ""},
-      {.num = 2, .name = "BAZ", .fmt = "old"},
-      {.num = 3, .name = "QUZ", .fmt = "s"},
-  };
-
-  // prepare string source
-  char* source1 = strdup("FOO 1 2.0 foo; FOO\nBAR\nBAZ 7 1 2.0; QUZ quz");
-
-  // parse string source
-  printf("parser (string):\n");
-  a32_parser_code_t code;
-  A32_PARSER_MAKE(p1, source1, defs);
-  while (a32_parser_next(&p1, &code)) {
-    // handle codes
-    switch (code.def->num) {
-      case 0:
-        printf("%s @ %ld: %d, %f, %s\n", code.def->name, code.off, code.args[0].i, code.args[1].f, code.args[2].s);
-        break;
-      case 1:
-        printf("%s @ %ld\n", code.def->name, code.off);
-        break;
-      case 2:
-        printf("%s @ %ld: %u, %lld, %f\n", code.def->name, code.off, code.args[0].o, code.args[1].l, code.args[2].d);
-        break;
-      case 3:
-        printf("%s @ %ld: %s\n", code.def->name, code.off, code.args[0].s);
-        break;
-      default:
-        break;
-    }
-  }
-
-  // prepare binary source
-  uint8_t source2[] = {
-      0x00,                                            // code
-      0x01, 0x00, 0x00, 0x00,                          // int
-      0x00, 0x00, 0x00, 0x40,                          // float
-      'f',  'o',  'o',  0x0,                           // string
-      0x01,                                            // code
-      0x02,                                            // code
-      0x07,                                            // octet
-      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // long
-      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,  // double
-      0x03,                                            // code
-      'q',  'u',  'z',  0x0,                           // string
-  };
-
-  // parse binary source
-  printf("parser (binary):\n");
-  A32_PARSER_MAKE_BINARY(p2, source2, sizeof(source2), defs);
-  while (a32_parser_next(&p2, &code)) {
-    // handle codes
-    switch (code.def->num) {
-      case 0:
-        printf("%s @ %ld: %d, %f, %s\n", code.def->name, code.off, code.args[0].i, code.args[1].f, code.args[2].s);
-        break;
-      case 1:
-        printf("%s @ %ld\n", code.def->name, code.off);
-        break;
-      case 2:
-        printf("%s @ %ld: %u, %lld, %f\n", code.def->name, code.off, code.args[0].o, code.args[1].l, code.args[2].d);
-        break;
-      case 3:
-        printf("%s @ %ld: %s\n", code.def->name, code.off, code.args[0].s);
-        break;
-      default:
-        break;
-    }
-  }
 }

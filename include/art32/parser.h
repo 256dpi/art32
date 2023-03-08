@@ -45,6 +45,13 @@ typedef struct {
   };
 } a32_parser_arg_t;
 
+typedef enum {
+  A32_PARSER_ERR_OK = 1,
+  A32_PARSER_ERR_DONE = 0,
+  A32_PARSER_ERR_UNKNOWN = -1,
+  A32_PARSER_ERR_UNDERFLOW = -2,
+} a32_parser_err_t;
+
 /**
  * A single parsed code.
  */
@@ -55,7 +62,7 @@ typedef struct {
 } a32_parser_code_t;
 
 #define A32_PARSER_MAKE(name, _source, _defs) \
-  a32_parser_t name = {.source = (void*)_source, .defs = _defs, .num_defs = sizeof(_defs) / sizeof(a32_parser_def_t)}
+  a32_parser_t name = {.source = (uint8_t*)_source, .defs = _defs, .num_defs = sizeof(_defs) / sizeof(a32_parser_def_t)}
 
 #define A32_PARSER_MAKE_BINARY(name, _source, _length, _defs)                \
   a32_parser_t name = {.source = _source,                                    \
@@ -71,6 +78,6 @@ typedef struct {
  * @param c The code.
  * @return Whether a code is available.
  */
-bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c);
+a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c);
 
 #endif  // A32_PARSER_H

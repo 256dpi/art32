@@ -3,15 +3,15 @@
 #include "art32/parser.h"
 #include "art32/convert.h"
 
-bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
+a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
   // clear code
   memset(c, 0, sizeof(a32_parser_code_t));
 
   // parse binary
   if (p->binary) {
     // check offset
-    if (p->off >= p->length) {
-      return false;
+    if (p->off == p->length) {
+      return A32_PARSER_ERR_DONE;
     }
 
     // get num
@@ -19,7 +19,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
     // find def
     a32_parser_def_t* def = NULL;
-    for (size_t i = 0; i < p->num_defs; i++) {
+    for (int i = 0; i < p->num_defs; i++) {
       if (num == p->defs[i].num) {
         def = &p->defs[i];
       }
@@ -27,7 +27,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
     // stop at unknown code
     if (def == NULL) {
-      return false;
+      return A32_PARSER_ERR_UNKNOWN;
     }
 
     // set offset
@@ -43,9 +43,9 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
     for (int i = 0; def->fmt[i] != 0; i++) {
       switch (def->fmt[i]) {
         case 'o': {
-          // check size
+          // check length
           if (p->length - p->off < 1) {
-            return false;
+            return A32_PARSER_ERR_UNDERFLOW;
           }
 
           // set value
@@ -57,9 +57,9 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
           break;
         }
         case 'i': {
-          // check size
+          // check length
           if (p->length - p->off < 4) {
-            return false;
+            return A32_PARSER_ERR_UNDERFLOW;
           }
 
           // set value
@@ -71,9 +71,9 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
           break;
         }
         case 'l': {
-          // check size
+          // check length
           if (p->length - p->off < 8) {
-            return false;
+            return A32_PARSER_ERR_UNDERFLOW;
           }
 
           // set value
@@ -85,9 +85,9 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
           break;
         }
         case 'f': {
-          // check size
+          // check length
           if (p->length - p->off < 4) {
-            return false;
+            return A32_PARSER_ERR_UNDERFLOW;
           }
 
           // set value
@@ -99,9 +99,9 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
           break;
         }
         case 'd': {
-          // check size
+          // check length
           if (p->length - p->off < 8) {
-            return false;
+            return A32_PARSER_ERR_UNDERFLOW;
           }
 
           // set value
@@ -116,6 +116,11 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
           // get length
           size_t len = strlen((char*)(p->source + p->off));
 
+          // check length
+          if (len >= p->length - p->off) {
+            return A32_PARSER_ERR_UNDERFLOW;
+          }
+
           // set value
           c->args[i].s = (char*)(p->source + p->off);
 
@@ -127,7 +132,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
       }
     }
 
-    return true;
+    return A32_PARSER_ERR_OK;
   }
 
   // prepare code token
@@ -145,7 +150,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
     // check end
     if (code_token == NULL) {
-      return false;
+      return A32_PARSER_ERR_DONE;
     }
 
     // trim token
@@ -171,7 +176,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
     // find def
     a32_parser_def_t* def = NULL;
-    for (size_t i = 0; i < p->num_defs; i++) {
+    for (int i = 0; i < p->num_defs; i++) {
       if (strcmp(p->defs[i].name, arg_token) == 0) {
         def = &p->defs[i];
       }
@@ -179,7 +184,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
     // skip unknown code
     if (def == NULL) {
-      continue;
+      return A32_PARSER_ERR_UNKNOWN;
     }
 
     // set offset
@@ -190,7 +195,7 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
     // check args
     if (strlen(def->fmt) == 0) {
-      return true;
+      return A32_PARSER_ERR_OK;
     }
 
     /* arg parsing */
@@ -229,6 +234,6 @@ bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
       arg_token = strtok_r(NULL, " ", &cache);
     }
 
-    return true;
+    return A32_PARSER_ERR_OK;
   }
 }

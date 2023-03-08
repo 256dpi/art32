@@ -44,6 +44,7 @@ else()
             tests/filter.cpp
             tests/motion.cpp
             tests/numbers.cpp
+            tests/parser.cpp
             tests/smooth.cpp)
 
     add_executable(tests ${TEST_FILES})
