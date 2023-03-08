@@ -124,10 +124,11 @@ int main() {
       {.num = 0, .name = "FOO", .fmt = "ifs"},
       {.num = 1, .name = "BAR", .fmt = ""},
       {.num = 2, .name = "BAZ", .fmt = "old"},
+      {.num = 3, .name = "QUZ", .fmt = "s"},
   };
 
   // prepare string source
-  char* source1 = strdup("FOO 1 2.0 foo; FOO\nBAR\nBAZ 7 1 2.0");
+  char* source1 = strdup("FOO 1 2.0 foo; FOO\nBAR\nBAZ 7 1 2.0; QUZ quz");
 
   // parse string source
   printf("parser (string):\n");
@@ -145,6 +146,9 @@ int main() {
       case 2:
         printf("%s @ %ld: %u, %lld, %f\n", code.def->name, code.off, code.args[0].o, code.args[1].l, code.args[2].d);
         break;
+      case 3:
+        printf("%s @ %ld: %s\n", code.def->name, code.off, code.args[0].s);
+        break;
       default:
         break;
     }
@@ -161,6 +165,8 @@ int main() {
       0x07,                                            // octet
       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // long
       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,  // double
+      0x03, // code
+      'q', 'u', 'z', 0x0, // string
   };
 
   // parse binary source
@@ -177,6 +183,9 @@ int main() {
         break;
       case 2:
         printf("%s @ %ld: %u, %lld, %f\n", code.def->name, code.off, code.args[0].o, code.args[1].l, code.args[2].d);
+        break;
+      case 3:
+        printf("%s @ %ld: %s\n", code.def->name, code.off, code.args[0].s);
         break;
       default:
         break;
