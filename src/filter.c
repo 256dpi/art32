@@ -34,12 +34,12 @@ double a32_filter_update(a32_filter_t *f, double v) {
 
   // sort values
   memcpy(f->sorted, f->values, sizeof(double) * f->num);
-  int i, j;
+  size_t i, j;
   double element;
   for (i = 1; i < f->count; i++) {
     element = f->sorted[i];
     j = i - 1;
-    while (j >= 0 && f->sorted[j] > element) {
+    while (f->sorted[j] > element) {
       f->sorted[j + 1] = f->sorted[j];
       j = j - 1;
     }

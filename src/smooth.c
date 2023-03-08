@@ -38,7 +38,7 @@ double a32_smooth_update(a32_smooth_t *s, double v) {
 
   // update min
   s->min = s->values[0];
-  for (int i = 1; i < s->count; i++) {
+  for (size_t i = 1; i < s->count; i++) {
     if (s->values[i] < s->min) {
       s->min = s->values[i];
     }
@@ -46,7 +46,7 @@ double a32_smooth_update(a32_smooth_t *s, double v) {
 
   // update max
   s->max = s->values[0];
-  for (int i = 1; i < s->count; i++) {
+  for (size_t i = 1; i < s->count; i++) {
     if (s->values[i] > s->max) {
       s->max = s->values[i];
     }
