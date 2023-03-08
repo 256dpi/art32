@@ -57,9 +57,15 @@ typedef struct {
   a32_parser_arg_t args[8];
 } a32_parser_code_t;
 
-#define A32_PARSER_MAKE(name, _source, _defs) \
+/**
+ * Macro to initialize a parser with a string.
+ */
+#define A32_PARSER_MAKE_STRING(name, _source, _defs) \
   a32_parser_t name = {.source = (uint8_t*)_source, .defs = _defs, .num_defs = sizeof(_defs) / sizeof(a32_parser_def_t)}
 
+/**
+ * Macro to initialize a parser with a buffer.
+ */
 #define A32_PARSER_MAKE_BINARY(name, _source, _length, _defs)                \
   a32_parser_t name = {.source = _source,                                    \
                        .defs = _defs,                                        \

@@ -12,7 +12,7 @@ static a32_parser_def_t defs[] = {
 };
 
 static a32_parser_err_t first_str_err(const char* source) {
-  A32_PARSER_MAKE(p, strdup(source), defs);
+  A32_PARSER_MAKE_STRING(p, strdup(source), defs);
   while (true) {
     a32_parser_code_t code;
     a32_parser_err_t err = a32_parser_next(&p, &code);
@@ -38,7 +38,7 @@ static a32_parser_err_t first_bin_err(uint8_t* source, size_t len) {
 TEST(Parser, String) {
   a32_parser_code_t code;
   char* source = strdup("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz");
-  A32_PARSER_MAKE(p, source, defs);
+  A32_PARSER_MAKE_STRING(p, source, defs);
   for (int i = 0; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
     switch (i) {
       case 0:
