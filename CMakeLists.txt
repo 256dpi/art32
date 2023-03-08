@@ -48,5 +48,4 @@ else()
 
     add_executable(tests ${TEST_FILES})
     target_link_libraries(tests art32 gtest gtest_main)
-
 endif()

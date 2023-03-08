@@ -1,14 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "art32/filter.h"
-#include "art32/matrix.h"
-#include "art32/motion.h"
-#include "art32/parser.h"
-#include "art32/smooth.h"
-#include "art32/convert.h"
+#include <art32/matrix.h>
+#include <art32/parser.h>
 
-int main() {
+int main(void) {
   /* matrix tests */
 
   // test matrix 2x3
