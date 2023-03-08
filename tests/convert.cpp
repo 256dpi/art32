@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-#include <art32/strconv.h>
+#include <art32/convert.h>
 }
 
 TEST(Strconv, ToString) {

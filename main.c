@@ -6,7 +6,7 @@
 #include "art32/motion.h"
 #include "art32/parser.h"
 #include "art32/smooth.h"
-#include "art32/strconv.h"
+#include "art32/convert.h"
 
 int main() {
   /* matrix tests */

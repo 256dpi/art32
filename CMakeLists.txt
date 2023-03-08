@@ -25,13 +25,13 @@ else()
     include_directories(include)
 
     set(SOURCE_FILES
+            src/convert.c
             src/filter.c
             src/matrix.c
             src/motion.c
             src/numbers.c
             src/parser.c
             src/smooth.c
-            src/strconv.c
             src/vector.c)
 
     add_library(art32 ${SOURCE_FILES})
@@ -40,11 +40,11 @@ else()
     target_link_libraries(example art32)
 
     set(TEST_FILES
+            tests/convert.cpp
             tests/filter.cpp
             tests/motion.cpp
             tests/numbers.cpp
-            tests/smooth.cpp
-            tests/strconv.cpp)
+            tests/smooth.cpp)
 
     add_executable(tests ${TEST_FILES})
     target_link_libraries(tests art32 gtest gtest_main)

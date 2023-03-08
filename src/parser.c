@@ -1,7 +1,7 @@
 #include <string.h>
 
 #include "art32/parser.h"
-#include "art32/strconv.h"
+#include "art32/convert.h"
 
 bool a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
   // clear code
