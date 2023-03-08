@@ -41,7 +41,9 @@ else()
 
     set(TEST_FILES
             tests/filter.cpp
+            tests/motion.cpp
             tests/numbers.cpp
+            tests/smooth.cpp
             tests/strconv.cpp)
 
     add_executable(tests ${TEST_FILES})

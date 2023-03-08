@@ -9,26 +9,6 @@
 #include "art32/strconv.h"
 
 int main() {
-  // test smooth
-  a32_smooth_t* smooth = a32_smooth_new(10);
-  printf("smooth: %f %f %f (5.0000, 5.0000, 5.0000)\n", a32_smooth_update(smooth, 5), smooth->min, smooth->max);
-  printf("smooth: %f %f %f (7.5000, 5.0000, 10.0000)\n", a32_smooth_update(smooth, 10), smooth->min, smooth->max);
-  printf("smooth: %f %f %f (10.0000, 5.0000, 15.0000)\n", a32_smooth_update(smooth, 15), smooth->min, smooth->max);
-  a32_smooth_free(smooth);
-
-  // test motion
-  a32_motion_t motion = {.max_velocity = 10, .max_acceleration = 1};
-  a32_motion_update(&motion, 100, 1);
-  printf("motion: %s (1)\n", a32_d2str(motion.position));
-  a32_motion_update(&motion, 100, 1);
-  printf("motion: %s (3)\n", a32_d2str(motion.position));
-  a32_motion_update(&motion, 100, 1);
-  printf("motion: %s (6)\n", a32_d2str(motion.position));
-  a32_motion_update(&motion, 100, 1);
-  printf("motion: %s (10)\n", a32_d2str(motion.position));
-  a32_motion_update(&motion, 100, 1);
-  printf("motion: %s (15)\n", a32_d2str(motion.position));
-
   /* matrix tests */
 
   // test matrix 2x3
