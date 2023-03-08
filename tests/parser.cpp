@@ -141,7 +141,7 @@ TEST(Parser, BinaryErr) {
       'f',  'o',  'o',  0x0,   // string
   };
   for (size_t i = 1; i < sizeof(s1); i++) {
-    ASSERT_EQ(A32_PARSER_ERR_UNDERFLOW, first_bin_err(s1, i));
+    ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_bin_err(s1, i));
   }
   ASSERT_EQ(A32_PARSER_ERR_DONE, first_bin_err(s1, sizeof(s1)));
 
