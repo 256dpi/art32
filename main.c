@@ -16,16 +16,6 @@ int main() {
   printf("smooth: %f %f %f (10.0000, 5.0000, 15.0000)\n", a32_smooth_update(smooth, 15), smooth->min, smooth->max);
   a32_smooth_free(smooth);
 
-  // test filter
-  a32_filter_t* filter = a32_filter_new(5);
-  printf("filter: %f (5.0000)\n", a32_filter_update(filter, 5));
-  printf("filter: %f (5.0000)\n", a32_filter_update(filter, 5));
-  printf("filter: %f (5.0000)\n", a32_filter_update(filter, 15));
-  printf("filter: %f (7.5000)\n", a32_filter_update(filter, 10));
-  printf("filter: %f (10.0000)\n", a32_filter_update(filter, 15));
-  printf("filter: %f (15.0000)\n", a32_filter_update(filter, 15));
-  a32_filter_free(filter);
-
   // test motion
   a32_motion_t motion = {.max_velocity = 10, .max_acceleration = 1};
   a32_motion_update(&motion, 100, 1);

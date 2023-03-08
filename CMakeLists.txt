@@ -40,6 +40,7 @@ else()
     target_link_libraries(example art32)
 
     set(TEST_FILES
+            tests/filter.cpp
             tests/numbers.cpp
             tests/strconv.cpp)
 
