@@ -40,6 +40,7 @@ else()
     target_link_libraries(example art32)
 
     set(TEST_FILES
+            tests/numbers.cpp
             tests/strconv.cpp)
 
     add_executable(tests ${TEST_FILES})
