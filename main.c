@@ -26,16 +26,6 @@ int main() {
   printf("filter: %f (15.0000)\n", a32_filter_update(filter, 15));
   a32_filter_free(filter);
 
-  // test strconv
-  printf("i2str: %s (10)\n", a32_i2str(10));
-  printf("l2str: %s (10)\n", a32_l2str(10));
-  printf("f2str: %s (10.0000)\n", a32_f2str(10.0f));
-  printf("d2str: %s (10.0000)\n", a32_d2str(10.0));
-  printf("str2i: %d (10)\n", a32_str2i("10"));
-  printf("str2l: %lld (10)\n", a32_str2l("10"));
-  printf("str2f: %.4f (10.0000)\n", a32_str2f("10.0"));
-  printf("str2d: %.4f (10.0000)\n", a32_str2d("10.0"));
-
   // test motion
   a32_motion_t motion = {.max_velocity = 10, .max_acceleration = 1};
   a32_motion_update(&motion, 100, 1);

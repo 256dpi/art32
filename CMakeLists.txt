@@ -38,15 +38,11 @@ else()
 
     add_executable(example main.c)
     target_link_libraries(example art32)
-#
-#    set(TEST_FILES
-#            tests/client.cpp
-#            tests/helpers.cpp
-#            tests/packet.cpp
-#            tests/string.cpp
-#            tests/tests.cpp)
-#
-#    add_executable(tests ${TEST_FILES})
-#    target_link_libraries(tests lwmqtt gtest gtest_main)
+
+    set(TEST_FILES
+            tests/strconv.cpp)
+
+    add_executable(tests ${TEST_FILES})
+    target_link_libraries(tests art32 gtest gtest_main)
 
 endif()

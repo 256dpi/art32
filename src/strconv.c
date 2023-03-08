@@ -32,13 +32,13 @@ const char* a32_l2str(int64_t num) {
 
 const char* a32_f2str(float num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%.4f", num);
+  snprintf(str, 32, "%g", num);
   return str;
 }
 
 const char* a32_d2str(double num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%.4f", num);
+  snprintf(str, 32, "%g", num);
   return str;
 }
 
