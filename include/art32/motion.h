@@ -50,6 +50,15 @@ typedef struct {
 } a32_motion_t;
 
 /**
+ * Constructs and returns a motion object with the specified maximum velocity and acceleration.
+ *
+ * @param max_velocity The maximum velocity.
+ * @param max_acceleration The maximum acceleration.
+ * @return A motion object.
+ */
+a32_motion_t a32_motion_make(double max_velocity, double max_acceleration);
+
+/**
  * Update the motion profile.
  *
  * The algorithm will calculate the next position to approach in order to reach the provided target.

@@ -5,7 +5,7 @@ extern "C" {
 }
 
 TEST(Motion, Update) {
-  a32_motion_t motion = {.max_velocity = 10, .max_acceleration = 1};
+  a32_motion_t motion = a32_motion_make(10, 1);
   a32_motion_update(&motion, 100, 1);
   EXPECT_EQ(1, motion.position);
   a32_motion_update(&motion, 100, 1);

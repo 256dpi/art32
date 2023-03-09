@@ -21,13 +21,13 @@ char* a32_trim(char* str) {
 
 const char* a32_i2str(int32_t num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%"PRId32, num);
+  snprintf(str, 32, "%" PRId32, num);
   return str;
 }
 
 const char* a32_l2str(int64_t num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%"PRId64, num);
+  snprintf(str, 32, "%" PRId64, num);
   return str;
 }
 

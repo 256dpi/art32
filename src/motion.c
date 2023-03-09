@@ -40,6 +40,14 @@ static void motion_calculate(a32_motion_t *m, double target, uint32_t delta) {
   }
 }
 
+a32_motion_t a32_motion_make(double max_velocity, double max_acceleration) {
+  a32_motion_t m = {
+      .max_velocity = max_velocity,
+      .max_acceleration = max_acceleration,
+  };
+  return m;
+}
+
 void a32_motion_update(a32_motion_t *m, double target, uint32_t delta) {
   // copy state
   m->last_position = m->position;
