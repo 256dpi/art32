@@ -20,7 +20,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
 
   // find def
   a32_parser_def_t* def = NULL;
-  for (int i = 0; i < p->num_defs; i++) {
+  for (size_t i = 0; i < p->num_defs; i++) {
     if (num == p->defs[i].num) {
       def = &p->defs[i];
     }
@@ -178,7 +178,7 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
 
     // find def
     a32_parser_def_t* def = NULL;
-    for (int i = 0; i < p->num_defs; i++) {
+    for (size_t i = 0; i < p->num_defs; i++) {
       if (strcmp(p->defs[i].name, arg_token) == 0) {
         def = &p->defs[i];
       }
@@ -231,6 +231,26 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
 
     return A32_PARSER_ERR_OK;
   }
+}
+
+a32_parser_t a32_parser_make_string(const char* source, a32_parser_def_t* defs, size_t num_defs) {
+  a32_parser_t p = {
+      .source = (uint8_t*)source,
+      .defs = defs,
+      .num_defs = num_defs,
+  };
+  return p;
+}
+
+a32_parser_t a32_parser_make_binary(uint8_t* source, size_t length, a32_parser_def_t* defs, size_t num_defs) {
+  a32_parser_t p = {
+      .source = source,
+      .defs = defs,
+      .num_defs = num_defs,
+      .binary = true,
+      .length = length,
+  };
+  return p;
 }
 
 a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
