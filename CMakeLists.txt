@@ -37,7 +37,7 @@ else()
     add_library(art32 ${SOURCE_FILES})
 
     add_executable(example main.c)
-    target_link_libraries(example art32)
+    target_link_libraries(example art32 m)
 
     set(TEST_FILES
             tests/convert.cpp
@@ -48,5 +48,5 @@ else()
             tests/smooth.cpp)
 
     add_executable(tests ${TEST_FILES})
-    target_link_libraries(tests art32 gtest gtest_main)
+    target_link_libraries(tests art32 m gtest gtest_main)
 endif()
