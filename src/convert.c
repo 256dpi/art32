@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 char* a32_trim(char* str) {
   // skip whitespace
@@ -20,13 +21,13 @@ char* a32_trim(char* str) {
 
 const char* a32_i2str(int32_t num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%d", num);
+  snprintf(str, 32, "%"PRId32, num);
   return str;
 }
 
 const char* a32_l2str(int64_t num) {
   static char str[32] = {0};
-  snprintf(str, 32, "%lld", num);
+  snprintf(str, 32, "%"PRId64, num);
   return str;
 }
 
