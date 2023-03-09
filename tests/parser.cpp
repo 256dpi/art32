@@ -11,28 +11,32 @@ static a32_parser_def_t defs[] = {
     {.num = 3, .name = "QUZ", .fmt = "s"},
 };
 
-static a32_parser_err_t first_str_err(const char* source) {
+static a32_parser_err_t first_str_err(const char* source, size_t* offset) {
   A32_PARSER_MAKE_STRING(p, strdup(source), defs);
   while (true) {
     a32_parser_code_t code;
     a32_parser_err_t err = a32_parser_next(&p, &code);
     if (err != A32_PARSER_ERR_OK) {
+      if (offset != nullptr) {
+        *offset = code.off;
+      }
       return err;
     }
   }
-  return A32_PARSER_ERR_OK;
 }
 
-static a32_parser_err_t first_bin_err(uint8_t* source, size_t len) {
+static a32_parser_err_t first_bin_err(uint8_t* source, size_t len, size_t* offset) {
   A32_PARSER_MAKE_BINARY(p, source, len, defs);
   while (true) {
     a32_parser_code_t code;
     a32_parser_err_t err = a32_parser_next(&p, &code);
     if (err != A32_PARSER_ERR_OK) {
+      if (offset != nullptr) {
+        *offset = code.off;
+      }
       return err;
     }
   }
-  return A32_PARSER_ERR_OK;
 }
 
 TEST(Parser, String) {
@@ -74,15 +78,26 @@ TEST(Parser, String) {
   }
 }
 
-TEST(Parser, StringErr) {
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("FOO"));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";FOO;"));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";;FOO;;"));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n\nFOO\n\n"));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n;FOO\n;"));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";\nFOO;\n"));
+TEST(Parser, StringFormat) {
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("FOO", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";FOO;", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";;FOO;;", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n\nFOO\n\n", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n;FOO\n;", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";\nFOO;\n", nullptr));
+}
 
-  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("QUX"));
+TEST(Parser, StringErr) {
+  size_t offset = 0;
+
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("FOO", &offset));
+  ASSERT_EQ(0, offset);
+
+  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("QUX", &offset));
+  ASSERT_EQ(0, offset);
+
+  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("FOO; QUX", &offset));
+  ASSERT_EQ(5, offset);
 }
 
 TEST(Parser, Binary) {
@@ -134,6 +149,8 @@ TEST(Parser, Binary) {
 }
 
 TEST(Parser, BinaryErr) {
+  size_t offset = 0;
+
   uint8_t s1[] = {
       0x00,                    // code
       0x01, 0x00, 0x00, 0x00,  // int
@@ -141,12 +158,15 @@ TEST(Parser, BinaryErr) {
       'f',  'o',  'o',  0x0,   // string
   };
   for (size_t i = 1; i < sizeof(s1); i++) {
-    ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_bin_err(s1, i));
+    ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_bin_err(s1, i, nullptr));
   }
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_bin_err(s1, sizeof(s1)));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_bin_err(s1, sizeof(s1), nullptr));
 
   uint8_t s2[] = {5};
-  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_bin_err(s2, sizeof(s2)));
+  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_bin_err(s2, sizeof(s2), &offset));
+  ASSERT_EQ(0, offset);
 
-  // TODO: Test source end.
+  uint8_t s3[] = {1, 5};
+  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_bin_err(s3, sizeof(s3), &offset));
+  ASSERT_EQ(1, offset);
 }
