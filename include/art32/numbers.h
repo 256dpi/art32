@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#define A32_CONSTRAIN(num, min, max) (num > max ? max : num < min ? min : num)
+#define A32_MAP(num, in_min, in_max, out_min, out_max) \
+  ((num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
 /**
  * Constrain number to be withing min and max.
  *
