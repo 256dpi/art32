@@ -33,7 +33,7 @@ static char* strbtok_r(char* str, const char* delim, char** cache) {
     // return token on closing tick character
     if (ticked && *str == '`') {
       *str = '\0';
-      *cache = str + 2;
+      *cache = str + 1;
       return token;
     }
 
@@ -44,7 +44,7 @@ static char* strbtok_r(char* str, const char* delim, char** cache) {
       return token;
     }
 
-    // advance
+    // otherwise, advance
     str++;
   }
 
