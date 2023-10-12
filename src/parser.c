@@ -197,11 +197,15 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
 
     /* arg parsing */
 
-    // get first arg
-    arg_token = strtok_r(NULL, " ", &cache);
-
     // check token
     for (size_t i = 0; arg_token != NULL; i++) {
+      // get next arg
+      arg_token = strtok_r(NULL, " ", &cache);
+      if (arg_token == NULL) {
+        break;
+      }
+
+      // handle argument
       switch (def->fmt[i]) {
         case 'o':
           c->args[i].o = (uint8_t)a32_str2i(arg_token);
@@ -224,9 +228,6 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
         default:
           break;
       }
-
-      // get next arg
-      arg_token = strtok_r(NULL, " ", &cache);
     }
 
     return A32_PARSER_ERR_OK;
