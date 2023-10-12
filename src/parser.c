@@ -3,6 +3,57 @@
 #include "art32/parser.h"
 #include "art32/convert.h"
 
+static char* strbtok_r(char* str, const char* delim, char** cache) {
+  // handle null input
+  if (str == NULL) {
+    str = *cache;
+  }
+
+  // skip leading delimiter characters
+  while (*str != '\0' && strchr(delim, *str) != NULL) {
+    str++;
+  }
+
+  // handle end of string
+  if (*str == '\0') {
+    *cache = str;
+    return NULL;
+  }
+
+  // prepare state
+  char* token = str;
+  bool ticked = *str == '`';
+  if (ticked) {
+    str++;
+    token++;
+  }
+
+  // scan string
+  while (*str != '\0') {
+    // return token on closing tick character
+    if (ticked && *str == '`') {
+      *str = '\0';
+      *cache = str + 2;
+      return token;
+    }
+
+    // return on delimiter character
+    if (strchr(delim, *str) != NULL && !ticked) {
+      *str = '\0';
+      *cache = str + 1;
+      return token;
+    }
+
+    // advance
+    str++;
+  }
+
+  // save state
+  *cache = str;
+
+  return token;
+}
+
 static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_t* c) {
   // clear code
   memset(c, 0, sizeof(a32_parser_code_t));
@@ -171,7 +222,7 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
     char* cache;
 
     // get arg token
-    char* arg_token = strtok_r(code_token, " ", &cache);
+    char* arg_token = strbtok_r(code_token, " ", &cache);
 
     // set offset
     c->off = code_token - (char*)p->source;
@@ -200,7 +251,7 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
     // check token
     for (size_t i = 0; arg_token != NULL; i++) {
       // get next arg
-      arg_token = strtok_r(NULL, " ", &cache);
+      arg_token = strbtok_r(NULL, " ", &cache);
       if (arg_token == NULL) {
         break;
       }

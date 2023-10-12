@@ -8,7 +8,7 @@ static a32_parser_def_t defs[] = {
     {.num = 0, .name = "FOO", .fmt = "ifs"},
     {.num = 1, .name = "BAR", .fmt = ""},
     {.num = 2, .name = "BAZ", .fmt = "old"},
-    {.num = 3, .name = "QUZ", .fmt = "s"},
+    {.num = 3, .name = "QUZ", .fmt = "ss"},
 };
 
 static a32_parser_err_t first_str_err(const char* source, size_t* offset) {
@@ -41,9 +41,10 @@ static a32_parser_err_t first_bin_err(uint8_t* source, size_t len, size_t* offse
 
 TEST(Parser, String) {
   a32_parser_code_t code;
-  char* source = strdup("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz");
+  char* source = strdup("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz\nQUZ `foo bar` baz");
   A32_PARSER_MAKE_STRING(p, source, defs);
-  for (int i = 0; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
+  int i = 0;
+  for (; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
     switch (i) {
       case 0:
         ASSERT_EQ(code.off, 0);
@@ -72,10 +73,17 @@ TEST(Parser, String) {
         ASSERT_EQ(code.def, &defs[3]);
         ASSERT_STREQ(code.args[0].s, "quz");
         break;
+      case 5:
+        ASSERT_EQ(code.off, 51);
+        ASSERT_EQ(code.def, &defs[3]);
+        ASSERT_STREQ(code.args[0].s, "foo bar");
+        ASSERT_STREQ(code.args[1].s, "baz");
+        break;
       default:
         ASSERT_FALSE(true);
     }
   }
+  ASSERT_EQ(i, 6);
 }
 
 TEST(Parser, StringFormat) {
