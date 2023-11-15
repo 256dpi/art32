@@ -44,8 +44,8 @@ int main(void) {
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
-  // test matrix 3x5z
-  printf("matrix: test 3x5z\n");
+  // test matrix 3x5
+  printf("matrix: test 3x5\n");
   double v3x5z[3][5] = {
       {0.0, 0.1, 0.2, 0.0, 0.1},
       {0.0, 0.0, 0.0, 0.0, 0.0},
@@ -58,12 +58,29 @@ int main(void) {
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
-  // test matrix 5x3z
-  printf("matrix: test 5x3z\n");
-  double v5x3z[5][3] = {
+  // test matrix 5x3
+  printf("matrix: test 5x3\n");
+  double v5x3[5][3] = {
       {0.0, 0.0, 0.0}, {0.1, 0.0, 0.3}, {0.2, 0.0, 0.4}, {0.0, 0.0, 0.0}, {0.1, 0.0, 0.1},
   };
-  mat = a32_matrix_use((double*)v5x3z, 5, 3);
+  mat = a32_matrix_use((double*)v5x3, 5, 3);
+  a32_matrix_print(mat);
+  printf("matrix: ---\n");
+  pinv = a32_matrix_pseudo_inverse(mat);
+  a32_matrix_print(pinv);
+  a32_matrix_free(pinv);
+
+  // test matrix 6x6
+  printf("matrix: test 6x6\n");
+  double v6x6[6][6] = {
+      { +0.000, +0.000, +1.000, +0.000, +1.000, +0.000 },
+      { +1.000, +0.000, +0.000, +1.000, +0.000, +0.000 },
+      { +0.000, +1.000, +0.000, +0.000, +0.000, +1.000 },
+      { -0.000, -60.000, -10.000, +0.000, +0.000, -43.000 },
+      { +0.000, -20.000, +0.000, +0.00,0 +0.000, +30.000 },
+      { +100.000, +0.000, +142.000, -95.000, -141.000, +0.000 },
+    };
+  mat = a32_matrix_use((double*)v6x6, 6, 6);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
   pinv = a32_matrix_pseudo_inverse(mat);
