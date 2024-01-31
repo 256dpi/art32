@@ -9,13 +9,13 @@ a32_smooth_t *a32_smooth_new(size_t num) {
   memset(s, 0, sizeof(a32_smooth_t));
 
   // allocate history
-  s->values = calloc(sizeof(double), num);
+  s->values = calloc(sizeof(float), num);
   s->num = num;
 
   return s;
 }
 
-double a32_smooth_update(a32_smooth_t *s, double v) {
+float a32_smooth_update(a32_smooth_t *s, float v) {
   // subtract last reading
   s->total -= s->values[s->index];
 
@@ -53,7 +53,7 @@ double a32_smooth_update(a32_smooth_t *s, double v) {
   }
 
   // return average
-  return s->total / (double)s->count;
+  return s->total / (float)s->count;
 }
 
 void a32_smooth_free(a32_smooth_t *s) {

@@ -8,12 +8,12 @@
  */
 typedef struct {
   size_t num;
-  double *values;
+  float *values;
   size_t index;
-  double total;
+  float total;
   size_t count;
-  double min;
-  double max;
+  float min;
+  float max;
 } a32_smooth_t;
 
 /**
@@ -31,7 +31,7 @@ a32_smooth_t *a32_smooth_new(size_t num);
  * @param v The value to be smoothed.
  * @return The smoothed value.
  */
-double a32_smooth_update(a32_smooth_t *s, double v);
+float a32_smooth_update(a32_smooth_t *s, float v);
 
 /**
  * Free a previously allocated smooth object.
