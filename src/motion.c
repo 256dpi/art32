@@ -2,11 +2,11 @@
 
 #include <art32/motion.h>
 
-// Adapted from https://github.com/WRidder/MotionProfileGenerator.
+// Adapted from: https://github.com/WRidder/MotionProfileGenerator.
 
-static void motion_calculate(a32_motion_t *m, double target, uint32_t delta) {
+static void motion_calculate(a32_motion_t *m, float target, float delta) {
   // check if we should de-accelerate
-  if ((pow(m->velocity, 2) / m->max_acceleration) / 2 >= fabs(target - m->position)) {
+  if ((powf(m->velocity, 2) / m->max_acceleration) / 2 >= fabsf(target - m->position)) {
     // perform de-acceleration
     if (m->velocity < 0) {
       m->position = (m->velocity + m->max_acceleration * delta) * delta + m->position;
@@ -18,14 +18,14 @@ static void motion_calculate(a32_motion_t *m, double target, uint32_t delta) {
   }
 
   // check if we should accelerate
-  if ((fabs(m->velocity) < m->max_velocity || (target < m->position && m->velocity > 0) ||
+  if ((fabsf(m->velocity) < m->max_velocity || (target < m->position && m->velocity > 0) ||
        (target > m->position && m->velocity < 0))) {
     // accelerate up to max acceleration
     if (target > m->position) {
-      double speed = fmin(m->velocity + m->max_acceleration * delta, m->max_velocity);
+      float speed = fminf(m->velocity + m->max_acceleration * delta, m->max_velocity);
       m->position = speed * delta + m->position;
     } else {
-      double speed = fmax(m->velocity - m->max_acceleration * delta, -m->max_velocity);
+      float speed = fmaxf(m->velocity - m->max_acceleration * delta, -m->max_velocity);
       m->position = speed * delta + m->position;
     }
 
@@ -40,15 +40,14 @@ static void motion_calculate(a32_motion_t *m, double target, uint32_t delta) {
   }
 }
 
-a32_motion_t a32_motion_make(double max_velocity, double max_acceleration) {
-  a32_motion_t m = {
+a32_motion_t a32_motion_make(float max_velocity, float max_acceleration) {
+  return (a32_motion_t){
       .max_velocity = max_velocity,
       .max_acceleration = max_acceleration,
   };
-  return m;
 }
 
-void a32_motion_update(a32_motion_t *m, double target, uint32_t delta) {
+void a32_motion_update(a32_motion_t *m, float target, float delta) {
   // copy state
   m->last_position = m->position;
   m->last_velocity = m->velocity;
