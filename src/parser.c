@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "art32/parser.h"
 #include "art32/convert.h"
@@ -373,7 +374,7 @@ int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char
       }
       case 'l': {
         // encode long
-        int n = snprintf(buf + size, len - size, "%lld", args[i].l);
+        int n = snprintf(buf + size, len - size, "%" PRId64, args[i].l);
         if (n < 0) {
           return -1;
         }
