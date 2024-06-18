@@ -73,6 +73,7 @@ TEST(Parser, String) {
         ASSERT_EQ(code.off, 43);
         ASSERT_EQ(code.def, &defs[3]);
         ASSERT_STREQ(code.args[0].s, "quz");
+        ASSERT_TRUE(code.args[1].s == nullptr);
         break;
       case 5:
         ASSERT_EQ(code.off, 51);
@@ -153,6 +154,7 @@ TEST(Parser, Binary) {
         ASSERT_EQ(code.off, 32);
         ASSERT_EQ(code.def, &defs[3]);
         ASSERT_STREQ(code.args[0].s, "quz");
+        ASSERT_TRUE(code.args[1].s == nullptr);
         break;
       default:
         ASSERT_FALSE(true);
