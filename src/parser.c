@@ -88,11 +88,17 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
 
   // parse arguments
   for (int i = 0; def->fmt[i] != 0; i++) {
+    // check overflow
+    if (i >= A32_PARSER_MAX_ARGS) {
+      return A32_PARSER_ERR_OVERFLOW;
+    }
+
+    // handle argument
     switch (def->fmt[i]) {
       case 'o': {
         // check length
         if (p->length - p->off < 1) {
-          return A32_PARSER_ERR_OVERFLOW;
+          return A32_PARSER_ERR_UNDERFLOW;
         }
 
         // set value
@@ -106,7 +112,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
       case 'i': {
         // check length
         if (p->length - p->off < 4) {
-          return A32_PARSER_ERR_OVERFLOW;
+          return A32_PARSER_ERR_UNDERFLOW;
         }
 
         // set value
@@ -120,7 +126,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
       case 'l': {
         // check length
         if (p->length - p->off < 8) {
-          return A32_PARSER_ERR_OVERFLOW;
+          return A32_PARSER_ERR_UNDERFLOW;
         }
 
         // set value
@@ -134,7 +140,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
       case 'f': {
         // check length
         if (p->length - p->off < 4) {
-          return A32_PARSER_ERR_OVERFLOW;
+          return A32_PARSER_ERR_UNDERFLOW;
         }
 
         // set value
@@ -148,7 +154,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
       case 'd': {
         // check length
         if (p->length - p->off < 8) {
-          return A32_PARSER_ERR_OVERFLOW;
+          return A32_PARSER_ERR_UNDERFLOW;
         }
 
         // set value
@@ -165,7 +171,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
 
         // check length
         if (len >= p->length - p->off) {
-          return A32_PARSER_ERR_OVERFLOW;
+          return A32_PARSER_ERR_UNDERFLOW;
         }
 
         // set value
@@ -250,6 +256,11 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
 
     // check token
     for (size_t i = 0; arg_token != NULL; i++) {
+      // check overflow
+      if (i >= A32_PARSER_MAX_ARGS) {
+        return A32_PARSER_ERR_OVERFLOW;
+      }
+
       // get next arg
       arg_token = strbtok_r(NULL, " ", &cache);
       if (arg_token == NULL) {

@@ -9,6 +9,7 @@ static a32_parser_def_t defs[] = {
     {.num = 1, .name = "BAR", .fmt = ""},
     {.num = 2, .name = "BAZ", .fmt = "old"},
     {.num = 3, .name = "QUZ", .fmt = "ss"},
+    {.num = 4, .name = "XXX", .fmt = "ooooooooooooooooo"},
 };
 
 static a32_parser_err_t first_str_err(const char* source, size_t* offset) {
@@ -106,6 +107,9 @@ TEST(Parser, StringErr) {
 
   ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("FOO; QUX", &offset));
   ASSERT_EQ(5, offset);
+
+  ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_str_err("XXX 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16", &offset));
+  ASSERT_EQ(0, offset);
 }
 
 TEST(Parser, Binary) {
@@ -166,7 +170,7 @@ TEST(Parser, BinaryErr) {
       'f',  'o',  'o',  0x0,   // string
   };
   for (size_t i = 1; i < sizeof(s1); i++) {
-    ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_bin_err(s1, i, nullptr));
+    ASSERT_EQ(A32_PARSER_ERR_UNDERFLOW, first_bin_err(s1, i, nullptr));
   }
   ASSERT_EQ(A32_PARSER_ERR_DONE, first_bin_err(s1, sizeof(s1), nullptr));
 
@@ -177,4 +181,8 @@ TEST(Parser, BinaryErr) {
   uint8_t s3[] = {1, 5};
   ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_bin_err(s3, sizeof(s3), &offset));
   ASSERT_EQ(1, offset);
+
+  uint8_t s4[] = {4, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+  ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_bin_err(s4, sizeof(s4), &offset));
+  ASSERT_EQ(0, offset);
 }

@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#define A32_PARSER_MAX_ARGS 16
+
 /**
  * A parser definition.
  */
@@ -46,7 +48,8 @@ typedef enum {
   A32_PARSER_ERR_OK = 1,
   A32_PARSER_ERR_DONE = 0,
   A32_PARSER_ERR_UNKNOWN = -1,
-  A32_PARSER_ERR_OVERFLOW = -2,
+  A32_PARSER_ERR_UNDERFLOW = -2,
+  A32_PARSER_ERR_OVERFLOW = -3,
 } a32_parser_err_t;
 
 /**
@@ -55,7 +58,7 @@ typedef enum {
 typedef struct {
   size_t off;
   a32_parser_def_t* def;
-  a32_parser_arg_t args[8];
+  a32_parser_arg_t args[A32_PARSER_MAX_ARGS];
 } a32_parser_code_t;
 
 a32_parser_t a32_parser_make_string(const char* source, a32_parser_def_t* defs, size_t num_defs);
