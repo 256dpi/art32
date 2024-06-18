@@ -85,4 +85,15 @@ a32_parser_t a32_parser_make_binary(uint8_t* source, size_t length, a32_parser_d
  */
 a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c);
 
+/**
+ * Will encode the specified code into a string.
+ *
+ * @param def The definition.
+ * @param args The arguments.
+ * @param buf The buffer.
+ * @param len The length of the buffer.
+ * @return The number of bytes encoded or -1 if the buffer is too small.
+ */
+int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char* buf, size_t len);
+
 #endif  // A32_PARSER_H

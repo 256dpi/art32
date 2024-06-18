@@ -186,3 +186,15 @@ TEST(Parser, BinaryErr) {
   ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_bin_err(s4, sizeof(s4), &offset));
   ASSERT_EQ(0, offset);
 }
+
+TEST(Parser, EncodeString) {
+  a32_parser_arg_t args[] = {
+      {.i = 1},
+      {.f = (float)2.3},
+      {.s = (char*)"foo"},
+  };
+  char buf[64];
+  int n = a32_parser_encode_string(&defs[0], args, buf, sizeof(buf));
+  ASSERT_STREQ(buf, "FOO 1 2.3 foo");
+  ASSERT_EQ(n, 13);
+}

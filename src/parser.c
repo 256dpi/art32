@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "art32/parser.h"
@@ -322,4 +323,101 @@ a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
   } else {
     return a32_parser_next_string(p, c);
   }
+}
+
+int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char* buf, size_t len) {
+  // prepare size
+  size_t size = 0;
+
+  // check buffer
+  if (len < strlen(def->fmt) + 1) {
+    return -1;
+  }
+
+  // encode name
+  strcpy(buf, def->name);
+  size += strlen(def->name);
+
+  // encode arguments
+  for (size_t i = 0; i < strlen(def->fmt); i++) {
+    // check buffer
+    if (len < size + 1) {
+      return -1;
+    }
+
+    // add space
+    buf[size] = ' ';
+    size++;
+
+    // encode value
+    switch (def->fmt[i]) {
+      case 'o': {
+        // encode octet
+        int n = snprintf(buf + size, len - size, "%d", args[i].o);
+        if (n < 0) {
+          return -1;
+        }
+        size += n;
+
+        break;
+      }
+      case 'i': {
+        // encode integer
+        int n = snprintf(buf + size, len - size, "%d", args[i].i);
+        if (n < 0) {
+          return -1;
+        }
+        size += n;
+
+        break;
+      }
+      case 'l': {
+        // encode long
+        int n = snprintf(buf + size, len - size, "%lld", args[i].l);
+        if (n < 0) {
+          return -1;
+        }
+        size += n;
+
+        break;
+      }
+      case 'f': {
+        // encode float
+        int n = snprintf(buf + size, len - size, "%g", args[i].f);
+        if (n < 0) {
+          return -1;
+        }
+        size += n;
+
+        break;
+      }
+      case 'd': {
+        // encode double
+        int n = snprintf(buf + size, len - size, "%g", args[i].d);
+        if (n < 0) {
+          return -1;
+        }
+        size += n;
+
+        break;
+      }
+      case 's': {
+        // encode string
+        int n;
+        if (strchr(args[i].s, ' ') != NULL) {
+          n = snprintf(buf + size, len - size, "`%s`", args[i].s);
+        } else {
+          n = snprintf(buf + size, len - size, "%s", args[i].s);
+        }
+        if (n < 0) {
+          return -1;
+        }
+        size += n;
+
+        break;
+      }
+    }
+  }
+
+  return (int)size;
 }
