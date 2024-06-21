@@ -190,13 +190,29 @@ TEST(Parser, BinaryErr) {
 }
 
 TEST(Parser, EncodeString) {
+  char buf[64];
+
   a32_parser_arg_t args[] = {
       {.i = 1},
       {.f = (float)2.3},
       {.s = (char*)"foo"},
   };
-  char buf[64];
   int n = a32_parser_encode_string(&defs[0], args, buf, sizeof(buf));
   ASSERT_STREQ(buf, "FOO 1 2.3 foo");
   ASSERT_EQ(n, 13);
+
+  args[2].s = nullptr;
+  n = a32_parser_encode_string(&defs[0], args, buf, sizeof(buf));
+  ASSERT_STREQ(buf, "FOO 1 2.3 ``");
+  ASSERT_EQ(n, 12);
+
+  args[2].s = (char*)"";
+  n = a32_parser_encode_string(&defs[0], args, buf, sizeof(buf));
+  ASSERT_STREQ(buf, "FOO 1 2.3 ``");
+  ASSERT_EQ(n, 12);
+
+  args[2].s = (char*)"foo bar";
+  n = a32_parser_encode_string(&defs[0], args, buf, sizeof(buf));
+  ASSERT_STREQ(buf, "FOO 1 2.3 `foo bar`");
+  ASSERT_EQ(n, 19);
 }

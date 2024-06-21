@@ -405,7 +405,9 @@ int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char
       case 's': {
         // encode string
         int n;
-        if (strchr(args[i].s, ' ') != NULL) {
+        if (args[i].s == NULL || strlen(args[i].s) == 0) {
+          n = snprintf(buf + size, len - size, "``");
+        } else if (strchr(args[i].s, ' ') != NULL) {
           n = snprintf(buf + size, len - size, "`%s`", args[i].s);
         } else {
           n = snprintf(buf + size, len - size, "%s", args[i].s);
