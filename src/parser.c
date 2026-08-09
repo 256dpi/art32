@@ -345,7 +345,13 @@ int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char
   strcpy(buf, def->name);
 
   // encode arguments
-  for (size_t i = 0; i < strlen(def->fmt); i++) {
+  size_t num_args = strlen(def->fmt);
+  for (size_t i = 0; i < num_args; i++) {
+    // check overflow
+    if (i >= A32_PARSER_MAX_ARGS) {
+      return -1;
+    }
+
     // check buffer (space, at least one character and the terminator)
     if (len < size + 2) {
       return -1;

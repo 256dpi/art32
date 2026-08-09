@@ -115,7 +115,9 @@ a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c);
  * @param args The arguments.
  * @param buf The buffer.
  * @param len The length of the buffer.
- * @return The number of bytes encoded or -1 if the buffer is too small.
+ * @return The number of bytes encoded or -1 if the buffer is too small or the definition
+ *         is invalid (unknown format character or more than A32_PARSER_MAX_ARGS
+ *         arguments).
  */
 int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char* buf, size_t len);
 

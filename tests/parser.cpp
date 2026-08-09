@@ -231,6 +231,17 @@ TEST(Parser, EncodeStringOctet) {
   ASSERT_EQ(n, 13);
 }
 
+// Regression: the encoder walked the whole format string without bounding the argument
+// index by A32_PARSER_MAX_ARGS, reading past the end of the caller's array.
+TEST(Parser, EncodeStringTooManyArgs) {
+  // this definition declares more arguments than a code can carry
+  ASSERT_GT(strlen(defs[4].fmt), (size_t)A32_PARSER_MAX_ARGS);
+
+  a32_parser_arg_t args[A32_PARSER_MAX_ARGS] = {};
+  char buf[128];
+  ASSERT_EQ(-1, a32_parser_encode_string(&defs[4], args, buf, sizeof(buf)));
+}
+
 TEST(Parser, EncodeStringTooSmall) {
   a32_parser_arg_t args[] = {
       {.i = 1234567},
