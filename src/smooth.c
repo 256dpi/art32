@@ -5,12 +5,20 @@
 
 a32_smooth_t *a32_smooth_new(size_t num) {
   // allocate object
-  a32_smooth_t *s = (a32_smooth_t *)malloc(sizeof(a32_smooth_t));
-  memset(s, 0, sizeof(a32_smooth_t));
+  a32_smooth_t *s = (a32_smooth_t *)calloc(1, sizeof(a32_smooth_t));
+  if (s == NULL) {
+    return NULL;
+  }
 
   // allocate history
-  s->values = calloc(sizeof(float), num);
+  s->values = calloc(num, sizeof(float));
   s->num = num;
+
+  // check history
+  if (s->values == NULL) {
+    a32_smooth_free(s);
+    return NULL;
+  }
 
   return s;
 }
