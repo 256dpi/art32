@@ -34,7 +34,7 @@ double a32_filter_update(a32_filter_t *s, double v);
 /**
  * Free a previously allocated filter object.
  *
- * @param s The filter object to be freed.
+ * @param s The filter object to be freed. May be NULL.
  */
 void a32_filter_free(a32_filter_t *s);
 
