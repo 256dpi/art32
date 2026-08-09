@@ -73,7 +73,7 @@ a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length);
  * Find the biggest value.
  *
  * @param vec The vector.
- * @return The maximum.
+ * @return The maximum or zero if the vector is empty.
  */
 double a32_vector_max(a32_vector_t vec);
 
@@ -81,7 +81,7 @@ double a32_vector_max(a32_vector_t vec);
  * Find the smallest value.
  *
  * @param vec The vector.
- * @return The minimum.
+ * @return The minimum or zero if the vector is empty.
  */
 double a32_vector_min(a32_vector_t vec);
 

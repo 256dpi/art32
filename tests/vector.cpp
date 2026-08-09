@@ -92,3 +92,12 @@ TEST(Vector, Multiply) {
   ASSERT_EQ(vec1.values[1], 10);
   ASSERT_EQ(vec1.values[2], 18);
 }
+
+// Regression: min and max seeded themselves from the first element without checking
+// that the vector had one.
+TEST(Vector, MinMaxEmpty) {
+  a32_vector_t vec = a32_vector_new(0);
+  ASSERT_EQ(0, a32_vector_max(vec));
+  ASSERT_EQ(0, a32_vector_min(vec));
+  a32_vector_free(vec);
+}

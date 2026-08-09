@@ -50,11 +50,16 @@ a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
 }
 
 double a32_vector_max(a32_vector_t vec) {
+  // handle empty vector
+  if (vec.length == 0) {
+    return 0;
+  }
+
   // set max to first element
   double max = vec.values[0];
 
   // find the biggest element
-  for (size_t i = 0; i < vec.length; i++) {
+  for (size_t i = 1; i < vec.length; i++) {
     if (vec.values[i] > max) {
       max = vec.values[i];
     }
@@ -64,11 +69,16 @@ double a32_vector_max(a32_vector_t vec) {
 }
 
 double a32_vector_min(a32_vector_t vec) {
+  // handle empty vector
+  if (vec.length == 0) {
+    return 0;
+  }
+
   // set min to first element
   double min = vec.values[0];
 
   // find the smallest element
-  for (size_t i = 0; i < vec.length; i++) {
+  for (size_t i = 1; i < vec.length; i++) {
     if (vec.values[i] < min) {
       min = vec.values[i];
     }
