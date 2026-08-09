@@ -250,15 +250,19 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
     // set def
     c->def = def;
 
+    // get number of arguments
+    size_t num_args = strlen(def->fmt);
+
     // check args
-    if (strlen(def->fmt) == 0) {
+    if (num_args == 0) {
       return A32_PARSER_ERR_OK;
     }
 
     /* arg parsing */
 
     // check token
-    for (size_t i = 0; arg_token != NULL; i++) {
+    size_t i = 0;
+    for (; arg_token != NULL; i++) {
       // check overflow
       if (i >= A32_PARSER_MAX_ARGS) {
         return A32_PARSER_ERR_OVERFLOW;
@@ -271,7 +275,7 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
       }
 
       // stop if the format has been exhausted
-      if (def->fmt[i] == 0) {
+      if (i >= num_args) {
         break;
       }
 
@@ -298,6 +302,11 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
         default:
           break;
       }
+    }
+
+    // check underflow
+    if (i < num_args) {
+      return A32_PARSER_ERR_UNDERFLOW;
     }
 
     return A32_PARSER_ERR_OK;

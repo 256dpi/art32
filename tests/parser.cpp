@@ -46,7 +46,7 @@ static a32_parser_err_t first_bin_err(uint8_t* source, size_t len, size_t* offse
 
 TEST(Parser, String) {
   a32_parser_code_t code;
-  std::string source("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz\nQUZ `foo bar` baz");
+  std::string source("FOO 1 2.3 foo; BAR\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz baz\nQUZ `foo bar` baz");
   A32_PARSER_MAKE_STRING(p, source.data(), defs);
   int i = 0;
   for (; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
@@ -60,7 +60,7 @@ TEST(Parser, String) {
         break;
       case 1:
         ASSERT_EQ(code.off, 15);
-        ASSERT_EQ(code.def, &defs[0]);
+        ASSERT_EQ(code.def, &defs[1]);
         break;
       case 2:
         ASSERT_EQ(code.off, 26);
@@ -77,10 +77,10 @@ TEST(Parser, String) {
         ASSERT_EQ(code.off, 43);
         ASSERT_EQ(code.def, &defs[3]);
         ASSERT_STREQ(code.args[0].s, "quz");
-        ASSERT_TRUE(code.args[1].s == nullptr);
+        ASSERT_STREQ(code.args[1].s, "baz");
         break;
       case 5:
-        ASSERT_EQ(code.off, 51);
+        ASSERT_EQ(code.off, 55);
         ASSERT_EQ(code.def, &defs[3]);
         ASSERT_STREQ(code.args[0].s, "foo bar");
         ASSERT_STREQ(code.args[1].s, "baz");
@@ -93,28 +93,54 @@ TEST(Parser, String) {
 }
 
 TEST(Parser, StringFormat) {
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("FOO", nullptr));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";FOO;", nullptr));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";;FOO;;", nullptr));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n\nFOO\n\n", nullptr));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n;FOO\n;", nullptr));
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";\nFOO;\n", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("BAR", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";BAR;", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";;BAR;;", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n\nBAR\n\n", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("\n;BAR\n;", nullptr));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err(";\nBAR;\n", nullptr));
 }
 
 TEST(Parser, StringErr) {
   size_t offset = 0;
 
-  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("FOO", &offset));
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("BAR", &offset));
   ASSERT_EQ(0, offset);
 
   ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("QUX", &offset));
   ASSERT_EQ(0, offset);
 
-  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("FOO; QUX", &offset));
+  ASSERT_EQ(A32_PARSER_ERR_UNKNOWN, first_str_err("BAR; QUX", &offset));
   ASSERT_EQ(5, offset);
 
   ASSERT_EQ(A32_PARSER_ERR_OVERFLOW, first_str_err("XXX 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16", &offset));
   ASSERT_EQ(0, offset);
+}
+
+// Regression: string mode accepted a code with missing arguments and returned OK with the
+// remaining ones left zeroed, so a missing string argument surfaced as a NULL pointer.
+// Binary mode already reported this as an underflow.
+TEST(Parser, StringMissingArgs) {
+  size_t offset = 0;
+
+  // no arguments at all
+  ASSERT_EQ(A32_PARSER_ERR_UNDERFLOW, first_str_err("FOO", &offset));
+  ASSERT_EQ(0, offset);
+
+  // some arguments missing
+  ASSERT_EQ(A32_PARSER_ERR_UNDERFLOW, first_str_err("FOO 1", &offset));
+  ASSERT_EQ(0, offset);
+
+  // only the trailing string missing, which yielded a NULL char*
+  ASSERT_EQ(A32_PARSER_ERR_UNDERFLOW, first_str_err("FOO 1 2.3", &offset));
+  ASSERT_EQ(0, offset);
+
+  // the reported offset points at the offending code
+  ASSERT_EQ(A32_PARSER_ERR_UNDERFLOW, first_str_err("BAR; QUZ quz", &offset));
+  ASSERT_EQ(5, offset);
+
+  // a complete code still parses
+  ASSERT_EQ(A32_PARSER_ERR_DONE, first_str_err("FOO 1 2.3 foo", nullptr));
 }
 
 TEST(Parser, Binary) {
