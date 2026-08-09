@@ -71,3 +71,17 @@ TEST(Numbers, SafeMap) {
   EXPECT_EQ(80, a32_safe_map_f(10, 3, 8, 30, 80));
   EXPECT_EQ(80, a32_safe_map_d(10, 3, 8, 30, 80));
 }
+
+// Regression: an empty input range divided by zero.
+TEST(Numbers, SafeMapEmptyRange) {
+  EXPECT_EQ(7, a32_safe_map_i(5, 3, 3, 7, 100));
+  EXPECT_EQ(7, a32_safe_map_l(5, 3, 3, 7, 100));
+  EXPECT_EQ(7, a32_safe_map_f(5, 3, 3, 7, 100));
+  EXPECT_EQ(7, a32_safe_map_d(5, 3, 3, 7, 100));
+
+  // also holds for an inverted output range
+  EXPECT_EQ(100, a32_safe_map_i(5, 3, 3, 100, 7));
+  EXPECT_EQ(100, a32_safe_map_l(5, 3, 3, 100, 7));
+  EXPECT_EQ(100, a32_safe_map_f(5, 3, 3, 100, 7));
+  EXPECT_EQ(100, a32_safe_map_d(5, 3, 3, 100, 7));
+}
