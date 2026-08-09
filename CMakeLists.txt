@@ -42,10 +42,12 @@ else()
     set(TEST_FILES
             tests/convert.cpp
             tests/filter.cpp
+            tests/matrix.cpp
             tests/motion.cpp
             tests/numbers.cpp
             tests/parser.cpp
-            tests/smooth.cpp)
+            tests/smooth.cpp
+            tests/vector.cpp)
 
     add_executable(tests ${TEST_FILES})
     target_link_libraries(tests art32 m gtest gtest_main)
