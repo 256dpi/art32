@@ -4,6 +4,29 @@ extern "C" {
 #include <art32/matrix.h>
 }
 
+// Regression: the macro arguments were not parenthesized, so a compound argument was
+// regrouped around the multiplication and addressed the wrong element.
+TEST(Matrix, MacroPrecedence) {
+  double values[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  a32_matrix_t mat = a32_matrix_use(values, 3, 3);
+
+  size_t r = 1, c = 1;
+
+  // an unparenthesized `row` turned `(r + 1) * cols` into `r + (1 * cols)`
+  EXPECT_EQ(8, A32_MAT(mat, r + 1, c));
+
+  // an unparenthesized `col` let the conditional swallow the whole index expression
+  EXPECT_EQ(5, A32_MAT(mat, r, c ? c : 0));
+
+  // an unparenthesized `mat` did not accept a dereferenced pointer at all
+  a32_matrix_t* ptr = &mat;
+  EXPECT_EQ(1, A32_MAT(*ptr, 0, 0));
+
+  // the same holds when assigning
+  A32_MAT(mat, r + 1, c) = 80;
+  EXPECT_EQ(80, values[7]);
+}
+
 // Expected values are taken from `mat.py` (numpy).
 
 static void expect_matrix(a32_matrix_t mat, size_t rows, size_t cols, const double* expected, double delta = 1e-3) {

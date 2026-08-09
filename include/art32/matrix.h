@@ -18,8 +18,11 @@ typedef struct {
 
 /**
  * Short-hand helper for accessing matrix elements.
+ *
+ * Note: This macro evaluates its arguments more than once, therefore arguments must not
+ * have side effects.
  */
-#define A32_MAT(mat, row, col) mat.values[row * mat.cols + col]
+#define A32_MAT(mat, row, col) (mat).values[(row) * (mat).cols + (col)]
 
 /**
  * Creates a new matrix using stack memory.
