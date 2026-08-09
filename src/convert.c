@@ -46,7 +46,17 @@ const char* a32_d2str(double num) {
   return str;
 }
 
-int32_t a32_str2i(const char* str) { return strtol(str, NULL, 10); }
+int32_t a32_str2i(const char* str) {
+  // parse as a wide number and saturate, as narrowing the result would wrap it
+  long long num = strtoll(str, NULL, 10);
+  if (num > INT32_MAX) {
+    return INT32_MAX;
+  } else if (num < INT32_MIN) {
+    return INT32_MIN;
+  }
+
+  return (int32_t)num;
+}
 
 int64_t a32_str2l(const char* str) { return strtoll(str, NULL, 10); }
 

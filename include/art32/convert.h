@@ -61,7 +61,7 @@ const char* a32_d2str(double num);
  * Returns the number from the string.
  *
  * @param str The string.
- * @return The number.
+ * @return The number, saturated to the range of the type.
  */
 int32_t a32_str2i(const char* str);
 
