@@ -36,7 +36,7 @@ float a32_smooth_update(a32_smooth_t *s, float v);
 /**
  * Free a previously allocated smooth object.
  *
- * @param s The smooth object to be freed.
+ * @param s The smooth object to be freed. May be NULL.
  */
 void a32_smooth_free(a32_smooth_t *s);
 

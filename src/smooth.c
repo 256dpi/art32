@@ -29,14 +29,8 @@ a32_smooth_t *a32_smooth_new(size_t num) {
 }
 
 float a32_smooth_update(a32_smooth_t *s, float v) {
-  // subtract last reading
-  s->total -= s->values[s->index];
-
   // save reading
   s->values[s->index] = v;
-
-  // add current reading
-  s->total += v;
 
   // increment index and wrap around
   s->index++;
@@ -49,19 +43,19 @@ float a32_smooth_update(a32_smooth_t *s, float v) {
     s->count++;
   }
 
-  // update min
+  // recompute total, min and max over the history (carrying the total across updates
+  // would accumulate the rounding error of every reading ever added)
+  s->total = s->values[0];
   s->min = s->values[0];
-  for (size_t i = 1; i < s->count; i++) {
-    if (s->values[i] < s->min) {
-      s->min = s->values[i];
-    }
-  }
-
-  // update max
   s->max = s->values[0];
   for (size_t i = 1; i < s->count; i++) {
-    if (s->values[i] > s->max) {
-      s->max = s->values[i];
+    float value = s->values[i];
+    s->total += value;
+    if (value < s->min) {
+      s->min = value;
+    }
+    if (value > s->max) {
+      s->max = value;
     }
   }
 
@@ -70,6 +64,11 @@ float a32_smooth_update(a32_smooth_t *s, float v) {
 }
 
 void a32_smooth_free(a32_smooth_t *s) {
+  // handle null object
+  if (s == NULL) {
+    return;
+  }
+
   // free history
   free(s->values);
 
