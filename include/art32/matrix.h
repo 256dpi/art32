@@ -1,7 +1,9 @@
 #ifndef A32_MATRIX_H
 #define A32_MATRIX_H
 
+#include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "vector.h"
 
@@ -11,7 +13,7 @@
 typedef struct {
   size_t rows;
   size_t cols;
-  double *values;
+  double* values;
 } a32_matrix_t;
 
 /**
@@ -35,6 +37,8 @@ typedef struct {
 /**
  * Creates a new matrix using heap memory.
  *
+ * Note: The returned matrix has a NULL `values` pointer if the allocation failed.
+ *
  * @param rows The row count.
  * @param cols The column count.
  * @return The allocated matrix.
@@ -56,7 +60,7 @@ void a32_matrix_free(a32_matrix_t mat);
  * @param cols The column count.
  * @return The stack allocated matrix.
  */
-a32_matrix_t a32_matrix_use(const double *values, size_t rows, size_t cols);
+a32_matrix_t a32_matrix_use(const double* values, size_t rows, size_t cols);
 
 /**
  * Copy values from one matrix to another.
@@ -151,15 +155,35 @@ void a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar);
 a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat);
 
 /**
+ * Calculates the inverse of a square matrix using LU decomposition.
+ *
+ * A singular matrix has no inverse. In that case `ok` is set to false and a zero matrix
+ * is returned. The result must be freed in either case.
+ *
+ * @param mat The matrix.
+ * @param ok Receives whether the matrix could be inverted. May be NULL.
+ * @return The inverted matrix.
+ */
+a32_matrix_t a32_matrix_invert(a32_matrix_t mat, bool* ok);
+
+/**
  * Calculates the pseudo inverse of the matrix.
  *
+ * Beyond fully zero rows and columns, the matrix must have full rank. For a rank
+ * deficient matrix `ok` is set to false and the result is undefined. The result must be
+ * freed in either case.
+ *
+ * @param mat The matrix.
+ * @param ok Receives whether the pseudo inverse could be calculated. May be NULL.
  * @return The calculated matrix.
  */
-a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat);
+a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat, bool* ok);
 
 /**
  *  Prints the matrix using `printf`.
+ *
+ * @param mat The matrix.
  */
-void a32_matrix_print(a32_matrix_t);
+void a32_matrix_print(a32_matrix_t mat);
 
 #endif  // A32_MATRIX_H

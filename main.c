@@ -13,7 +13,7 @@ int main(void) {
   a32_matrix_t mat = a32_matrix_use((double*)v2x2, 2, 2);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
-  a32_matrix_t pinv = a32_matrix_pseudo_inverse(mat);
+  a32_matrix_t pinv = a32_matrix_pseudo_inverse(mat, NULL);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
@@ -26,7 +26,7 @@ int main(void) {
   mat = a32_matrix_use((double*)v2x3, 2, 3);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
-  pinv = a32_matrix_pseudo_inverse(mat);
+  pinv = a32_matrix_pseudo_inverse(mat, NULL);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
@@ -40,7 +40,7 @@ int main(void) {
   mat = a32_matrix_use((double*)v3x3, 3, 3);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
-  pinv = a32_matrix_pseudo_inverse(mat);
+  pinv = a32_matrix_pseudo_inverse(mat, NULL);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
@@ -54,7 +54,7 @@ int main(void) {
   mat = a32_matrix_use((double*)v3x5z, 3, 5);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
-  pinv = a32_matrix_pseudo_inverse(mat);
+  pinv = a32_matrix_pseudo_inverse(mat, NULL);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
@@ -66,7 +66,7 @@ int main(void) {
   mat = a32_matrix_use((double*)v5x3, 5, 3);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
-  pinv = a32_matrix_pseudo_inverse(mat);
+  pinv = a32_matrix_pseudo_inverse(mat, NULL);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 
@@ -80,7 +80,7 @@ int main(void) {
   mat = a32_matrix_use((double*)v6x6, 6, 6);
   a32_matrix_print(mat);
   printf("matrix: ---\n");
-  pinv = a32_matrix_pseudo_inverse(mat);
+  pinv = a32_matrix_pseudo_inverse(mat, NULL);
   a32_matrix_print(pinv);
   a32_matrix_free(pinv);
 }

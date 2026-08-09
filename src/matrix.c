@@ -9,13 +9,14 @@
 #include <art32/matrix.h>
 #include <art32/vector.h>
 
-#define TINY 1.0e-20;
+#define TINY 1.0e-20
 
 static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
   size_t i_max = 0;
   double big, dum, sum, temp, d;
+  bool singular = false;
 
-  A32_VECTOR_MAKE(vv, mat.cols);
+  A32_VECTOR_MAKE(vv, mat.rows);
   d = 1.0;
 
   for (size_t i = 0; i < mat.rows; i++) {
@@ -76,7 +77,8 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
     index.values[j] = i_max;
 
     if (A32_MAT(mat, j, j) == 0.0) {
-      A32_MAT(mat, j, j) = TINY
+      A32_MAT(mat, j, j) = TINY;
+      singular = true;
     }
 
     if (j != (mat.rows - 1)) {
@@ -88,31 +90,33 @@ static bool lu_decompose(a32_matrix_t mat, a32_vector_t index) {
     }
   }
 
-  return true;
+  return !singular;
 }
 
 static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_t b) {
-  int8_t ip, ii = -1;
+  size_t ip, ii = 0;
+  bool started = false;
 
   double sum;
 
   for (size_t i = 0; i < mat.rows; i++) {
-    ip = index.values[i];
+    ip = (size_t)index.values[i];
     sum = b.values[ip];
     b.values[ip] = b.values[i];
 
-    if (ii != -1) {
-      for (size_t j = ii; j <= (i - 1); j++) {
+    if (started) {
+      for (size_t j = ii; j < i; j++) {
         sum -= A32_MAT(mat, i, j) * b.values[j];
       }
     } else if (sum) {
       ii = i;
+      started = true;
     }
 
     b.values[i] = sum;
   }
 
-  for (int8_t i = (mat.rows - 1); i >= 0; i--) {
+  for (size_t i = mat.rows; i-- > 0;) {
     sum = b.values[i];
     for (size_t j = (i + 1); j < mat.rows; j++) {
       sum -= A32_MAT(mat, i, j) * b.values[j];
@@ -124,7 +128,7 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
 
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
   // allocate values
-  double *values = calloc(sizeof(double), rows * cols);
+  double *values = calloc(rows * cols, sizeof(double));
 
   // prepare matrix
   a32_matrix_t mat = {
@@ -302,9 +306,14 @@ a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
   return result;
 }
 
-a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
+a32_matrix_t a32_matrix_invert(a32_matrix_t mat, bool *ok) {
   // assert shape
   assert(mat.rows == mat.cols);
+
+  // set status
+  if (ok != NULL) {
+    *ok = true;
+  }
 
   // copy result
   a32_matrix_t result = a32_matrix_new(mat.rows, mat.cols);
@@ -314,9 +323,15 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   A32_MATRIX_MAKE(temp, mat.rows, mat.cols);
   a32_matrix_copy(temp, mat);
 
-  // decompose
+  // decompose and yield a zeroed matrix if the input is singular
   A32_VECTOR_MAKE(index, mat.rows);
-  lu_decompose(temp, index);
+  if (!lu_decompose(temp, index)) {
+    if (ok != NULL) {
+      *ok = false;
+    }
+    memset(result.values, 0, sizeof(double) * result.rows * result.cols);
+    return result;
+  }
 
   // prepare column
   A32_VECTOR_MAKE(col, mat.rows);
@@ -336,9 +351,14 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat) {
   return result;
 }
 
-a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
+a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat, bool *ok) {
   // get input
   a32_matrix_t input = mat;
+
+  // set status
+  if (ok != NULL) {
+    *ok = true;
+  }
 
   // flip if tall
   bool flipped = false;
@@ -381,6 +401,14 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
     }
   }
 
+  // handle fully zero matrix (the pseudo inverse is the zero matrix as well)
+  if (valid_rows == 0 || valid_cols == 0) {
+    if (flipped) {
+      a32_matrix_free(input);
+    }
+    return a32_matrix_new(mat.cols, mat.rows);
+  }
+
   // prepare temporary matrix (without zero row and columns)
   A32_MATRIX_MAKE(temp, valid_rows, valid_cols);
 
@@ -411,8 +439,12 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat) {
   // multiply
   a32_matrix_t product = a32_matrix_multiply(temp, transpose);
 
-  // invert
-  a32_matrix_t inverse = a32_matrix_invert(product);
+  // invert (fails if the matrix is rank deficient)
+  bool inverted = true;
+  a32_matrix_t inverse = a32_matrix_invert(product, &inverted);
+  if (!inverted && ok != NULL) {
+    *ok = false;
+  }
 
   // final transpose
   a32_matrix_t output = a32_matrix_multiply(transpose, inverse);
