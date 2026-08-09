@@ -118,7 +118,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
         }
 
         // set value
-        c->args[i].i = *((int32_t*)(p->source + p->off));
+        memcpy(&c->args[i].i, p->source + p->off, sizeof(int32_t));
 
         // increment
         p->off += 4;
@@ -132,7 +132,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
         }
 
         // set value
-        c->args[i].l = *((int64_t*)(p->source + p->off));
+        memcpy(&c->args[i].l, p->source + p->off, sizeof(int64_t));
 
         // increment
         p->off += 8;
@@ -146,7 +146,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
         }
 
         // set value
-        c->args[i].f = *((float*)(p->source + p->off));
+        memcpy(&c->args[i].f, p->source + p->off, sizeof(float));
 
         // increment
         p->off += 4;
@@ -160,7 +160,7 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
         }
 
         // set value
-        c->args[i].d = *((double*)(p->source + p->off));
+        memcpy(&c->args[i].d, p->source + p->off, sizeof(double));
 
         // increment
         p->off += 8;
@@ -168,13 +168,14 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
         break;
       }
       case 's': {
-        // get length
-        size_t len = strlen((char*)(p->source + p->off));
-
-        // check length
-        if (len >= p->length - p->off) {
+        // find terminator within the remaining bytes
+        const uint8_t* end = memchr(p->source + p->off, 0, p->length - p->off);
+        if (end == NULL) {
           return A32_PARSER_ERR_UNDERFLOW;
         }
+
+        // get length
+        size_t len = (size_t)(end - (p->source + p->off));
 
         // set value
         c->args[i].s = (char*)(p->source + p->off);
@@ -269,6 +270,11 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
         break;
       }
 
+      // stop if the format has been exhausted
+      if (def->fmt[i] == 0) {
+        break;
+      }
+
       // handle argument
       switch (def->fmt[i]) {
         case 'o':
@@ -298,7 +304,7 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
   }
 }
 
-a32_parser_t a32_parser_make_string(const char* source, a32_parser_def_t* defs, size_t num_defs) {
+a32_parser_t a32_parser_make_string(char* source, a32_parser_def_t* defs, size_t num_defs) {
   a32_parser_t p = {
       .source = (uint8_t*)source,
       .defs = defs,
@@ -328,21 +334,20 @@ a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c) {
 
 int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char* buf, size_t len) {
   // prepare size
-  size_t size = 0;
+  size_t size = strlen(def->name);
 
   // check buffer
-  if (len < strlen(def->fmt) + 1) {
+  if (len < size + 1) {
     return -1;
   }
 
   // encode name
   strcpy(buf, def->name);
-  size += strlen(def->name);
 
   // encode arguments
   for (size_t i = 0; i < strlen(def->fmt); i++) {
-    // check buffer
-    if (len < size + 1) {
+    // check buffer (space, at least one character and the terminator)
+    if (len < size + 2) {
       return -1;
     }
 
@@ -351,60 +356,30 @@ int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char
     size++;
 
     // encode value
+    int n;
     switch (def->fmt[i]) {
-      case 'o': {
+      case 'o':
         // encode octet
-        int n = snprintf(buf + size, len - size, "%" PRId8, args[i].o);
-        if (n < 0) {
-          return -1;
-        }
-        size += n;
-
+        n = snprintf(buf + size, len - size, "%" PRIu8, args[i].o);
         break;
-      }
-      case 'i': {
+      case 'i':
         // encode integer
-        int n = snprintf(buf + size, len - size, "%" PRId32, args[i].i);
-        if (n < 0) {
-          return -1;
-        }
-        size += n;
-
+        n = snprintf(buf + size, len - size, "%" PRId32, args[i].i);
         break;
-      }
-      case 'l': {
+      case 'l':
         // encode long
-        int n = snprintf(buf + size, len - size, "%" PRId64, args[i].l);
-        if (n < 0) {
-          return -1;
-        }
-        size += n;
-
+        n = snprintf(buf + size, len - size, "%" PRId64, args[i].l);
         break;
-      }
-      case 'f': {
+      case 'f':
         // encode float
-        int n = snprintf(buf + size, len - size, "%g", args[i].f);
-        if (n < 0) {
-          return -1;
-        }
-        size += n;
-
+        n = snprintf(buf + size, len - size, "%g", args[i].f);
         break;
-      }
-      case 'd': {
+      case 'd':
         // encode double
-        int n = snprintf(buf + size, len - size, "%g", args[i].d);
-        if (n < 0) {
-          return -1;
-        }
-        size += n;
-
+        n = snprintf(buf + size, len - size, "%g", args[i].d);
         break;
-      }
-      case 's': {
+      case 's':
         // encode string
-        int n;
         if (args[i].s == NULL || strlen(args[i].s) == 0) {
           n = snprintf(buf + size, len - size, "``");
         } else if (strchr(args[i].s, ' ') != NULL) {
@@ -412,14 +387,19 @@ int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char
         } else {
           n = snprintf(buf + size, len - size, "%s", args[i].s);
         }
-        if (n < 0) {
-          return -1;
-        }
-        size += n;
-
         break;
-      }
+      default:
+        // unknown format character
+        return -1;
     }
+
+    // check encoding error and truncation
+    if (n < 0 || (size_t)n >= len - size) {
+      return -1;
+    }
+
+    // increment
+    size += n;
   }
 
   return (int)size;

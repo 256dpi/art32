@@ -27,7 +27,6 @@ typedef struct {
   size_t length;  // binary
   // private:
   bool init;
-  char* token;
   char* cache;
   size_t off;  // binary
 } a32_parser_t;
@@ -61,7 +60,31 @@ typedef struct {
   a32_parser_arg_t args[A32_PARSER_MAX_ARGS];
 } a32_parser_code_t;
 
-a32_parser_t a32_parser_make_string(const char* source, a32_parser_def_t* defs, size_t num_defs);
+/**
+ * Constructs a parser that reads codes from a string.
+ *
+ * Note: The parser will modify the passed string and parsed string arguments point into
+ * it, therefore it must stay valid and unmodified for the lifetime of the parser.
+ *
+ * @param source The source string.
+ * @param defs The definitions.
+ * @param num_defs The number of definitions.
+ * @return A parser object.
+ */
+a32_parser_t a32_parser_make_string(char* source, a32_parser_def_t* defs, size_t num_defs);
+
+/**
+ * Constructs a parser that reads codes from a buffer.
+ *
+ * Note: Parsed string arguments point into the buffer, therefore it must stay valid and
+ * unmodified for the lifetime of the parser.
+ *
+ * @param source The source buffer.
+ * @param length The length of the buffer.
+ * @param defs The definitions.
+ * @param num_defs The number of definitions.
+ * @return A parser object.
+ */
 a32_parser_t a32_parser_make_binary(uint8_t* source, size_t length, a32_parser_def_t* defs, size_t num_defs);
 
 /**
