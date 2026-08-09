@@ -48,6 +48,13 @@ a32_motion_t a32_motion_make(float max_velocity, float max_acceleration) {
 }
 
 void a32_motion_update(a32_motion_t *m, float target, float delta) {
+  // skip invalid updates, as the profile divides by the maximum acceleration and the
+  // velocity and acceleration are derived by dividing by the delta (the comparisons are
+  // negated to also reject NaN)
+  if (!(delta > 0) || !(m->max_acceleration > 0)) {
+    return;
+  }
+
   // copy state
   m->last_position = m->position;
   m->last_velocity = m->velocity;

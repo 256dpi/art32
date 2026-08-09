@@ -18,7 +18,8 @@ typedef struct {
   /**
    * The configured maximum acceleration in m/t^2.
    *
-   * @note: Must be configured before calling update.
+   * @note: Must be configured before calling update and must be greater than zero, as the
+   * profile divides by it.
    */
   float max_acceleration;
 
@@ -62,6 +63,9 @@ a32_motion_t a32_motion_make(float max_velocity, float max_acceleration);
  * Update the motion profile.
  *
  * The algorithm will calculate the next position to approach in order to reach the provided target.
+ *
+ * The call is a no-op if the delta or the configured maximum acceleration is not greater
+ * than zero, as the profile would otherwise divide by zero and discard its state.
  *
  * @param m The motion object.
  * @param target The target to approach.
