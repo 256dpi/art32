@@ -15,6 +15,10 @@ typedef struct {
 /**
  * Creates a new vector using stack memory.
  *
+ * Note: This claims `length * sizeof(double)` bytes of stack, which is not checked against
+ * the stack of the calling task. Use a32_vector_new for lengths that are large or not
+ * known at build time.
+ *
  * @param name The variable name.
  * @param length The length.
  * @return A stack allocated vector.

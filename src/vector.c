@@ -1,12 +1,18 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <art32/vector.h>
 
 a32_vector_t a32_vector_new(size_t length) {
+  // reject a length whose byte count is not representable
+  if (length > SIZE_MAX / sizeof(double)) {
+    return a32_vector_use(NULL, length);
+  }
+
   // allocate values
   double* values = calloc(length, sizeof(double));
 

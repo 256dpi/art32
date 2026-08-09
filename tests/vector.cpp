@@ -1,7 +1,16 @@
 #include <gtest/gtest.h>
 
+#include <cstdint>
+
 extern "C" {
 #include <art32/vector.h>
+}
+
+// A failed allocation is reported through the values pointer.
+TEST(Vector, AllocationFailure) {
+  a32_vector_t vec = a32_vector_new(SIZE_MAX / 4);
+  EXPECT_EQ(nullptr, vec.values);
+  a32_vector_free(vec);
 }
 
 TEST(Vector, Use) {
