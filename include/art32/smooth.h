@@ -19,8 +19,8 @@ typedef struct {
 /**
  * Allocate a new smooth object.
  *
- * @param num The stored history of values.
- * @return Pointer to a new smooth object or NULL if the allocation failed.
+ * @param num The stored history of values (must be greater than zero).
+ * @return Pointer to a new smooth object or NULL if num is zero or the allocation failed.
  */
 a32_smooth_t *a32_smooth_new(size_t num);
 

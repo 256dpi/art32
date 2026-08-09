@@ -4,6 +4,11 @@
 #include <art32/smooth.h>
 
 a32_smooth_t *a32_smooth_new(size_t num) {
+  // check history size (a zero sized history has no values to average)
+  if (num == 0) {
+    return NULL;
+  }
+
   // allocate object
   a32_smooth_t *s = (a32_smooth_t *)calloc(1, sizeof(a32_smooth_t));
   if (s == NULL) {

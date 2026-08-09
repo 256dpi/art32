@@ -20,3 +20,7 @@ TEST(Smooth, Update) {
   EXPECT_EQ(20, smooth->max);
   a32_smooth_free(smooth);
 }
+
+// Regression: a zero sized history yielded an object whose update read and wrote past
+// the allocation and then divided by a zero count.
+TEST(Smooth, ZeroSize) { ASSERT_EQ(nullptr, a32_smooth_new(0)); }
