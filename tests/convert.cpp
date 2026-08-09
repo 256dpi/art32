@@ -4,6 +4,24 @@ extern "C" {
 #include <art32/convert.h>
 }
 
+TEST(Strconv, Trim) {
+  char s1[] = "  foo  ";
+  EXPECT_STREQ("foo", a32_trim(s1));
+
+  char s2[] = "foo";
+  EXPECT_STREQ("foo", a32_trim(s2));
+
+  char s3[] = "";
+  EXPECT_STREQ("", a32_trim(s3));
+
+  // Regression: an all-whitespace string underflowed the buffer.
+  char s4[] = "   ";
+  EXPECT_STREQ("", a32_trim(s4));
+
+  char s5[] = "\t foo \r\n";
+  EXPECT_STREQ("foo", a32_trim(s5));
+}
+
 TEST(Strconv, ToString) {
   EXPECT_STREQ("10", a32_i2str(10));
   EXPECT_STREQ("10", a32_l2str(10));

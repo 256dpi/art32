@@ -1,17 +1,20 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
 
+#include "art32/convert.h"
+
 char* a32_trim(char* str) {
   // skip whitespace
-  while (str[0] == ' ') {
+  while (isspace((unsigned char)str[0])) {
     str++;
   }
 
   // clear whitespace
   size_t len = strlen(str);
-  while (str[len - 1] == ' ') {
+  while (len > 0 && isspace((unsigned char)str[len - 1])) {
     str[len - 1] = '\0';
     len--;
   }
