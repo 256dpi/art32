@@ -1,9 +1,24 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <string>
 
 extern "C" {
 #include <art32/vector.h>
+}
+
+TEST(Vector, Print) {
+  double values[] = {1, -2.5, 0.125};
+  a32_vector_t vec = a32_vector_use(values, 3);
+
+  testing::internal::CaptureStdout();
+  a32_vector_print(vec);
+  EXPECT_EQ("[+1.000 -2.500 +0.125]\n", testing::internal::GetCapturedStdout());
+
+  // an empty vector prints empty brackets
+  testing::internal::CaptureStdout();
+  a32_vector_print(a32_vector_use(nullptr, 0));
+  EXPECT_EQ("[]\n", testing::internal::GetCapturedStdout());
 }
 
 // A failed allocation is reported through the values pointer.

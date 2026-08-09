@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <string>
 
 extern "C" {
 #include <art32/matrix.h>
@@ -305,6 +306,20 @@ TEST(Matrix, PseudoInverseReportsSuccess) {
   a32_matrix_t res = a32_matrix_pseudo_inverse(mat, &ok);
   ASSERT_TRUE(ok);
   a32_matrix_free(res);
+}
+
+TEST(Matrix, Print) {
+  double values[2][3] = {{1, -2.5, 0}, {0.125, 3, -4}};
+  a32_matrix_t mat = a32_matrix_use((double*)values, 2, 3);
+
+  testing::internal::CaptureStdout();
+  a32_matrix_print(mat);
+  EXPECT_EQ("[+1.000 -2.500 +0.000]\n[+0.125 +3.000 -4.000]\n", testing::internal::GetCapturedStdout());
+
+  // a matrix without rows prints nothing
+  testing::internal::CaptureStdout();
+  a32_matrix_print(a32_matrix_use(nullptr, 0, 0));
+  EXPECT_EQ("", testing::internal::GetCapturedStdout());
 }
 
 // Regression: allocation failures were neither detected nor reported, so the functions
