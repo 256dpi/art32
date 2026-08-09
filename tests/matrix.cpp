@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <cstdint>
+
 extern "C" {
 #include <art32/matrix.h>
 }
@@ -303,4 +305,51 @@ TEST(Matrix, PseudoInverseReportsSuccess) {
   a32_matrix_t res = a32_matrix_pseudo_inverse(mat, &ok);
   ASSERT_TRUE(ok);
   a32_matrix_free(res);
+}
+
+// Regression: allocation failures were neither detected nor reported, so the functions
+// that allocate internally wrote through a NULL pointer. Dimensions whose element count
+// exceeds the address space stand in for an exhausted heap, as the element count is
+// computed before it reaches the allocator.
+TEST(Matrix, AllocationFailure) {
+  const size_t huge = SIZE_MAX / 2;
+
+  // allocating reports through the values pointer
+  a32_matrix_t allocated = a32_matrix_new(huge, huge);
+  EXPECT_EQ(nullptr, allocated.values);
+  a32_matrix_free(allocated);
+
+  // the values are never read, as the allocation fails first
+  a32_matrix_t square = a32_matrix_use(nullptr, huge, huge);
+
+  a32_matrix_t transposed = a32_matrix_transpose(square);
+  EXPECT_EQ(nullptr, transposed.values);
+  a32_matrix_free(transposed);
+
+  a32_matrix_t multiplied = a32_matrix_multiply(square, square);
+  EXPECT_EQ(nullptr, multiplied.values);
+  a32_matrix_free(multiplied);
+
+  a32_vector_t row = a32_matrix_get_row(square, 0);
+  EXPECT_EQ(nullptr, row.values);
+  a32_vector_free(row);
+
+  // inverting reports through ok
+  bool ok = true;
+  a32_matrix_t inverted = a32_matrix_invert(square, &ok);
+  EXPECT_FALSE(ok);
+  EXPECT_EQ(nullptr, inverted.values);
+  a32_matrix_free(inverted);
+
+  // and so does the pseudo inverse, which flips a tall matrix first
+  ok = true;
+  a32_matrix_t tall = a32_matrix_use(nullptr, huge, 4);
+  a32_matrix_t pseudo = a32_matrix_pseudo_inverse(tall, &ok);
+  EXPECT_FALSE(ok);
+  EXPECT_EQ(nullptr, pseudo.values);
+  a32_matrix_free(pseudo);
+
+  // a NULL status is still accepted
+  a32_matrix_free(a32_matrix_invert(square, nullptr));
+  a32_matrix_free(a32_matrix_pseudo_inverse(tall, nullptr));
 }

@@ -127,6 +127,12 @@ static void lu_back_substitute(a32_matrix_t mat, a32_vector_t index, a32_vector_
 }
 
 a32_matrix_t a32_matrix_new(size_t rows, size_t cols) {
+  // reject dimensions whose byte count is not representable, as the element count is
+  // computed before it is handed to the allocator
+  if (rows != 0 && cols > SIZE_MAX / sizeof(double) / rows) {
+    return a32_matrix_use(NULL, rows, cols);
+  }
+
   // allocate values
   double *values = calloc(rows * cols, sizeof(double));
 
@@ -171,6 +177,9 @@ a32_vector_t a32_matrix_get_row(a32_matrix_t mat, size_t row) {
 
   // allocate
   a32_vector_t vec = a32_vector_new(mat.cols);
+  if (vec.values == NULL) {
+    return vec;
+  }
 
   // copy values from matrix
   for (size_t c = 0; c < vec.length; c++) {
@@ -186,6 +195,9 @@ a32_vector_t a32_matrix_get_col(a32_matrix_t mat, size_t col) {
 
   // allocate
   a32_vector_t vec = a32_vector_new(mat.rows);
+  if (vec.values == NULL) {
+    return vec;
+  }
 
   // copy values from matrix
   for (size_t r = 0; r < vec.length; r++) {
@@ -220,6 +232,9 @@ void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec) {
 a32_matrix_t a32_matrix_transpose(a32_matrix_t mat) {
   // allocate result
   a32_matrix_t result = a32_matrix_new(mat.cols, mat.rows);
+  if (result.values == NULL) {
+    return result;
+  }
 
   // transpose
   for (size_t r = 0; r < mat.rows; r++) {
@@ -263,6 +278,9 @@ a32_matrix_t a32_matrix_multiply(a32_matrix_t mat1, a32_matrix_t mat2) {
 
   // allocate result
   a32_matrix_t result = a32_matrix_new(mat1.rows, mat2.cols);
+  if (result.values == NULL) {
+    return result;
+  }
 
   // multiply
   for (size_t r = 0; r < mat1.rows; r++) {
@@ -293,6 +311,9 @@ a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat) {
 
   // allocate result
   a32_vector_t result = a32_vector_new(mat.rows);
+  if (result.values == NULL) {
+    return result;
+  }
 
   // multiply
   for (size_t r = 0; r < mat.rows; r++) {
@@ -317,6 +338,12 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat, bool *ok) {
 
   // copy result
   a32_matrix_t result = a32_matrix_new(mat.rows, mat.cols);
+  if (result.values == NULL) {
+    if (ok != NULL) {
+      *ok = false;
+    }
+    return result;
+  }
   a32_matrix_copy(result, mat);
 
   // copy temp
@@ -365,6 +392,12 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat, bool *ok) {
   if (input.rows > input.cols) {
     input = a32_matrix_transpose(input);
     flipped = true;
+    if (input.values == NULL) {
+      if (ok != NULL) {
+        *ok = false;
+      }
+      return a32_matrix_use(NULL, mat.cols, mat.rows);
+    }
   }
 
   // prepare maps for valid rows and columns
@@ -406,7 +439,11 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat, bool *ok) {
     if (flipped) {
       a32_matrix_free(input);
     }
-    return a32_matrix_new(mat.cols, mat.rows);
+    a32_matrix_t zero = a32_matrix_new(mat.cols, mat.rows);
+    if (zero.values == NULL && ok != NULL) {
+      *ok = false;
+    }
+    return zero;
   }
 
   // prepare temporary matrix (without zero row and columns)
@@ -433,24 +470,47 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat, bool *ok) {
     }
   }
 
+  // prepare intermediate matrices (any allocation may fail, in which case the ones made
+  // so far are freed by the cleanup below)
+  a32_matrix_t transpose = a32_matrix_use(NULL, 0, 0);
+  a32_matrix_t product = transpose;
+  a32_matrix_t inverse = transpose;
+  a32_matrix_t output = transpose;
+  a32_matrix_t final = transpose;
+
   // transpose
-  a32_matrix_t transpose = a32_matrix_transpose(temp);
+  transpose = a32_matrix_transpose(temp);
+  if (transpose.values == NULL) {
+    goto fail;
+  }
 
   // multiply
-  a32_matrix_t product = a32_matrix_multiply(temp, transpose);
+  product = a32_matrix_multiply(temp, transpose);
+  if (product.values == NULL) {
+    goto fail;
+  }
 
   // invert (fails if the matrix is rank deficient)
   bool inverted = true;
-  a32_matrix_t inverse = a32_matrix_invert(product, &inverted);
+  inverse = a32_matrix_invert(product, &inverted);
+  if (inverse.values == NULL) {
+    goto fail;
+  }
   if (!inverted && ok != NULL) {
     *ok = false;
   }
 
   // final transpose
-  a32_matrix_t output = a32_matrix_multiply(transpose, inverse);
+  output = a32_matrix_multiply(transpose, inverse);
+  if (output.values == NULL) {
+    goto fail;
+  }
 
   // construct final matrix (with zero rows and columns)
-  a32_matrix_t final = a32_matrix_new(input.cols, input.rows);
+  final = a32_matrix_new(input.cols, input.rows);
+  if (final.values == NULL) {
+    goto fail;
+  }
 
   // construct final matrix rows
   for (size_t fr = 0; fr < final.rows; fr++) {
@@ -485,9 +545,30 @@ a32_matrix_t a32_matrix_pseudo_inverse(a32_matrix_t mat, bool *ok) {
     result = a32_matrix_transpose(final);
     a32_matrix_free(final);
     a32_matrix_free(input);
+    if (result.values == NULL && ok != NULL) {
+      *ok = false;
+    }
   }
 
   return result;
+
+fail:
+  // free whatever has been allocated so far (freeing a matrix without values is a no-op)
+  a32_matrix_free(output);
+  a32_matrix_free(inverse);
+  a32_matrix_free(product);
+  a32_matrix_free(transpose);
+  a32_matrix_free(final);
+  if (flipped) {
+    a32_matrix_free(input);
+  }
+
+  // report failure
+  if (ok != NULL) {
+    *ok = false;
+  }
+
+  return a32_matrix_use(NULL, mat.cols, mat.rows);
 }
 
 void a32_matrix_print(a32_matrix_t mat) {

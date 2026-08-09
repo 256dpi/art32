@@ -27,6 +27,10 @@ typedef struct {
 /**
  * Creates a new matrix using stack memory.
  *
+ * Note: This claims `rows * cols * sizeof(double)` bytes of stack, which is not checked
+ * against the stack of the calling task. Use a32_matrix_new for dimensions that are large
+ * or not known at build time.
+ *
  * @param name The variable name.
  * @param rows The row count.
  * @param cols The column count.
@@ -75,6 +79,10 @@ void a32_matrix_copy(a32_matrix_t dst, a32_matrix_t src);
 
 /**
  * Get a row from the matrix.
+ *
+ * Note: The returned vector is heap allocated and must be freed by the caller. Its
+ * `values` pointer is NULL if the allocation failed.
+ *
  * @param mat The matrix.
  * @param row The row.
  * @return The extracted vector.
@@ -83,6 +91,10 @@ a32_vector_t a32_matrix_get_row(a32_matrix_t mat, size_t row);
 
 /**
  * Get a column from the matrix.
+ *
+ * Note: The returned vector is heap allocated and must be freed by the caller. Its
+ * `values` pointer is NULL if the allocation failed.
+ *
  * @param mat The matrix.
  * @param col The column.
  * @return The extracted vector.
@@ -110,6 +122,9 @@ void a32_matrix_set_col(a32_matrix_t mat, size_t col, a32_vector_t vec);
 /**
  * Transpose matrix, flip over its diagonal.
  *
+ * Note: The returned matrix is heap allocated and must be freed by the caller. Its
+ * `values` pointer is NULL if the allocation failed.
+ *
  * @param mat The matrix.
  * @return The transposed matrix.
  */
@@ -134,6 +149,9 @@ void a32_matrix_subtract(a32_matrix_t mat, a32_matrix_t sub);
 /**
  * Calculate the product of two matrices.
  *
+ * Note: The returned matrix is heap allocated and must be freed by the caller. Its
+ * `values` pointer is NULL if the allocation failed.
+ *
  * @param mat1 The first matrix.
  * @param mat2 The second matrix.
  * @return The calculated matrix.
@@ -151,6 +169,9 @@ void a32_matrix_multiply_scalar(a32_matrix_t mat, double scalar);
 /**
  * Multiply a vector with a matrix.
  *
+ * Note: The returned vector is heap allocated and must be freed by the caller. Its
+ * `values` pointer is NULL if the allocation failed.
+ *
  * @param vec The vector.
  * @param mat The matrix.
  * @return The product.
@@ -162,6 +183,10 @@ a32_vector_t a32_vector_multiply_matrix(a32_vector_t vec, a32_matrix_t mat);
  *
  * A singular matrix has no inverse. In that case `ok` is set to false and a zero matrix
  * is returned. The result must be freed in either case.
+ *
+ * If an allocation fails, `ok` is set to false and the result has a NULL `values` pointer.
+ *
+ * Note: This claims about `rows * (cols + 3) * sizeof(double)` bytes of stack.
  *
  * @param mat The matrix.
  * @param ok Receives whether the matrix could be inverted. May be NULL.
@@ -175,6 +200,10 @@ a32_matrix_t a32_matrix_invert(a32_matrix_t mat, bool* ok);
  * Beyond fully zero rows and columns, the matrix must have full rank. For a rank
  * deficient matrix `ok` is set to false and the result is undefined. The result must be
  * freed in either case.
+ *
+ * If an allocation fails, `ok` is set to false and the result has a NULL `values` pointer.
+ *
+ * Note: This claims stack for the shorter dimension squared plus the index maps.
  *
  * @param mat The matrix.
  * @param ok Receives whether the pseudo inverse could be calculated. May be NULL.
