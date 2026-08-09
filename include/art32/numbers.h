@@ -113,6 +113,9 @@ double a32_map_d(double num, double in_min, double in_max, double out_min, doubl
 /**
  * Map number safely from one range to another.
  *
+ * Unlike a32_map_i the intermediate product cannot overflow, so any combination of ranges
+ * yields the exact mapped value.
+ *
  * @param num The number.
  * @param in_min The input lower range.
  * @param in_max The input upper range.
@@ -124,6 +127,9 @@ int32_t a32_safe_map_i(int32_t num, int32_t in_min, int32_t in_max, int32_t out_
 
 /**
  * Map number safely from one range to another.
+ *
+ * Unlike a32_map_l the intermediate product cannot overflow. Ranges whose product exceeds
+ * 64 bits are scaled down first, which drops the lowest bits of the result.
  *
  * @param num The number.
  * @param in_min The input lower range.
