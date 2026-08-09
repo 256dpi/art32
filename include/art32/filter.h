@@ -18,7 +18,7 @@ typedef struct {
  * Allocate a new filter object.
  *
  * @param num The stored history of values (should be odd).
- * @return Pointer to a new filter object.
+ * @return Pointer to a new filter object or NULL if the allocation failed.
  */
 a32_filter_t *a32_filter_new(size_t num);
 

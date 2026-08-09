@@ -6,13 +6,21 @@
 
 a32_filter_t *a32_filter_new(size_t num) {
   // allocate object
-  a32_filter_t *f = (a32_filter_t *)malloc(sizeof(a32_filter_t));
-  memset(f, 0, sizeof(a32_filter_t));
+  a32_filter_t *f = (a32_filter_t *)calloc(1, sizeof(a32_filter_t));
+  if (f == NULL) {
+    return NULL;
+  }
 
   // allocate history
-  f->values = calloc(sizeof(double), num);
-  f->sorted = calloc(sizeof(double), num);
+  f->values = calloc(num, sizeof(double));
+  f->sorted = calloc(num, sizeof(double));
   f->num = num;
+
+  // check history
+  if (f->values == NULL || f->sorted == NULL) {
+    a32_filter_free(f);
+    return NULL;
+  }
 
   return f;
 }
@@ -38,12 +46,12 @@ double a32_filter_update(a32_filter_t *f, double v) {
   double element;
   for (i = 1; i < f->count; i++) {
     element = f->sorted[i];
-    j = i - 1;
-    while (f->sorted[j] > element) {
-      f->sorted[j + 1] = f->sorted[j];
-      j = j - 1;
+    j = i;
+    while (j > 0 && f->sorted[j - 1] > element) {
+      f->sorted[j] = f->sorted[j - 1];
+      j--;
     }
-    f->sorted[j + 1] = element;
+    f->sorted[j] = element;
   }
 
   // return middle number if odd
