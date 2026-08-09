@@ -27,3 +27,7 @@ TEST(Filter, DescendingValues) {
   EXPECT_EQ(3, a32_filter_update(filter, 1));
   a32_filter_free(filter);
 }
+
+// Regression: a zero sized history yielded an object whose update wrote past the
+// allocation and then indexed the sorted values with an underflowed count.
+TEST(Filter, ZeroSize) { ASSERT_EQ(nullptr, a32_filter_new(0)); }

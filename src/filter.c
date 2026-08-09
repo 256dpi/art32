@@ -5,6 +5,11 @@
 #include <art32/filter.h>
 
 a32_filter_t *a32_filter_new(size_t num) {
+  // check history size (a zero sized history has no values to select from)
+  if (num == 0) {
+    return NULL;
+  }
+
   // allocate object
   a32_filter_t *f = (a32_filter_t *)calloc(1, sizeof(a32_filter_t));
   if (f == NULL) {
