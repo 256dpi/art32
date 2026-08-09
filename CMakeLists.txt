@@ -60,9 +60,6 @@ else()
     endforeach ()
     add_library(art32_header_checks ${HEADER_CHECKS})
 
-    add_executable(example main.c)
-    target_link_libraries(example art32 m)
-
     set(TEST_FILES
             tests/convert.cpp
             tests/filter.cpp
