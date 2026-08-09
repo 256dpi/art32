@@ -2,6 +2,7 @@
 #define A32_VECTOR_H
 
 #include <stddef.h>
+#include <string.h>
 
 /**
  * A vector object.
@@ -25,6 +26,8 @@ typedef struct {
 
 /**
  * Creates a new vector using heap memory.
+ *
+ * Note: The returned vector has a NULL `values` pointer if the allocation failed.
  *
  * @param length The length.
  * @return A heap allocated vector.

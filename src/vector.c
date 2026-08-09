@@ -8,7 +8,7 @@
 
 a32_vector_t a32_vector_new(size_t length) {
   // allocate values
-  double* values = calloc(sizeof(double), length);
+  double* values = calloc(length, sizeof(double));
 
   // create vector
   a32_vector_t vec = {
