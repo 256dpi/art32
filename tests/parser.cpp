@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <string>
+
 extern "C" {
 #include <art32/parser.h>
 }
@@ -13,7 +15,9 @@ static a32_parser_def_t defs[] = {
 };
 
 static a32_parser_err_t first_str_err(const char* source, size_t* offset) {
-  A32_PARSER_MAKE_STRING(p, strdup(source), defs);
+  // the parser modifies the source in place, so it needs a mutable copy that outlives it
+  std::string buf(source);
+  A32_PARSER_MAKE_STRING(p, buf.data(), defs);
   while (true) {
     a32_parser_code_t code;
     a32_parser_err_t err = a32_parser_next(&p, &code);
@@ -42,8 +46,8 @@ static a32_parser_err_t first_bin_err(uint8_t* source, size_t len, size_t* offse
 
 TEST(Parser, String) {
   a32_parser_code_t code;
-  char* source = strdup("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz\nQUZ `foo bar` baz");
-  A32_PARSER_MAKE_STRING(p, source, defs);
+  std::string source("FOO 1 2.3 foo; FOO\n# hmm; BAR\nBAZ 7 1 1.4; QUZ quz\nQUZ `foo bar` baz");
+  A32_PARSER_MAKE_STRING(p, source.data(), defs);
   int i = 0;
   for (; a32_parser_next(&p, &code) == A32_PARSER_ERR_OK; i++) {
     switch (i) {
@@ -264,15 +268,14 @@ TEST(Parser, EncodeStringTooSmall) {
 // Regression: surplus arguments indexed past the end of the format string.
 TEST(Parser, StringSurplusArgs) {
   a32_parser_code_t code;
-  char* source = strdup("FOO 1 2.3 foo bar baz qux");
-  A32_PARSER_MAKE_STRING(p, source, defs);
+  std::string source("FOO 1 2.3 foo bar baz qux");
+  A32_PARSER_MAKE_STRING(p, source.data(), defs);
   ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
   ASSERT_EQ(code.def, &defs[0]);
   ASSERT_EQ(code.args[0].i, 1);
   ASSERT_EQ(code.args[1].f, (float)2.3);
   ASSERT_STREQ(code.args[2].s, "foo");
   ASSERT_EQ(A32_PARSER_ERR_DONE, a32_parser_next(&p, &code));
-  free(source);
 }
 
 // Regression: the binary string argument was scanned with strlen before the bounds
