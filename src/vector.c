@@ -43,6 +43,10 @@ void a32_vector_copy(a32_vector_t dst, a32_vector_t src) {
 }
 
 a32_vector_t a32_vector_view(a32_vector_t vec, size_t offset, size_t length) {
+  // assert shape (the addition cannot overflow for in range offsets)
+  assert(offset <= vec.length);
+  assert(length <= vec.length - offset);
+
   // create vector view
   a32_vector_t view = {.length = length, .values = vec.values + offset};
 

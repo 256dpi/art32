@@ -61,6 +61,8 @@ void a32_vector_copy(a32_vector_t dst, a32_vector_t src);
 /**
  * Creates a view of another vector without copying.
  *
+ * The view must lie within the source vector, otherwise the behaviour is undefined.
+ *
  * @param vec The vector.
  * @param offset The offset.
  * @param length The length.

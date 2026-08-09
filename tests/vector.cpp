@@ -101,3 +101,34 @@ TEST(Vector, MinMaxEmpty) {
   ASSERT_EQ(0, a32_vector_min(vec));
   a32_vector_free(vec);
 }
+
+// Regression: the view bounds were not checked. These are the legal boundary cases and
+// must keep working.
+TEST(Vector, ViewBounds) {
+  double values[] = {1, 2, 3, 4};
+  a32_vector_t vec = a32_vector_use(values, 4);
+
+  // a view may span the whole vector
+  a32_vector_t full = a32_vector_view(vec, 0, 4);
+  ASSERT_EQ(full.length, (size_t)4);
+  ASSERT_EQ(full.values[3], 4);
+
+  // an empty view at the very end is still in range
+  a32_vector_t end = a32_vector_view(vec, 4, 0);
+  ASSERT_EQ(end.length, (size_t)0);
+}
+
+// Regression: a view running past the end of the source was created silently. The bounds
+// are asserted, so this only holds while asserts are enabled.
+#ifndef NDEBUG
+TEST(VectorDeathTest, ViewOutOfBounds) {
+  double values[] = {1, 2, 3, 4};
+  a32_vector_t vec = a32_vector_use(values, 4);
+
+  // the length exceeds what remains after the offset
+  ASSERT_DEATH(a32_vector_view(vec, 3, 8), "");
+
+  // the offset alone is already out of range
+  ASSERT_DEATH(a32_vector_view(vec, 5, 0), "");
+}
+#endif
