@@ -36,6 +36,30 @@ else()
 
     add_library(art32 ${SOURCE_FILES})
 
+    # verify that every public header compiles on its own, including its make macros
+    file(GLOB HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/art32/*.h)
+    set(HEADER_CHECKS "")
+    foreach (HEADER ${HEADERS})
+        string(REGEX REPLACE "[/.]" "_" CHECK ${HEADER})
+        set(GENERATED ${CMAKE_CURRENT_BINARY_DIR}/header_checks/${CHECK}.c)
+        file(WRITE ${GENERATED}
+                "#include <${HEADER}>\n"
+                "int ${CHECK}(void);\n"
+                "int ${CHECK}(void) {\n"
+                "#ifdef A32_VECTOR_MAKE\n"
+                "  A32_VECTOR_MAKE(vec, 2);\n"
+                "  (void)vec;\n"
+                "#endif\n"
+                "#ifdef A32_MATRIX_MAKE\n"
+                "  A32_MATRIX_MAKE(mat, 2, 2);\n"
+                "  (void)mat;\n"
+                "#endif\n"
+                "  return 0;\n"
+                "}\n")
+        list(APPEND HEADER_CHECKS ${GENERATED})
+    endforeach ()
+    add_library(art32_header_checks ${HEADER_CHECKS})
+
     add_executable(example main.c)
     target_link_libraries(example art32 m)
 
