@@ -5,6 +5,58 @@
 #include "art32/parser.h"
 #include "art32/convert.h"
 
+// Splits the source into codes on semicolons and newlines. Unlike strtok_r it keeps track
+// of backtick quoting, so that a quoted argument may contain separator characters.
+static char* strctok_r(char* str, char** cache) {
+  // handle null input
+  if (str == NULL) {
+    str = *cache;
+  }
+
+  // skip leading separator characters
+  while (*str == ';' || *str == '\n') {
+    str++;
+  }
+
+  // handle end of string
+  if (*str == '\0') {
+    *cache = str;
+    return NULL;
+  }
+
+  // check for a comment, which runs to the end of the line and is not subject to quoting
+  char* peek = str;
+  while (*peek == ' ' || *peek == '\t' || *peek == '\r') {
+    peek++;
+  }
+  bool comment = *peek == '#';
+
+  // prepare state
+  char* token = str;
+  bool ticked = false;
+
+  // scan string
+  while (*str != '\0') {
+    // toggle quoting on tick characters, otherwise return the token on a separator
+    // character that is not quoted
+    if (!comment && *str == '`') {
+      ticked = !ticked;
+    } else if (!ticked && (*str == ';' || *str == '\n')) {
+      *str = '\0';
+      *cache = str + 1;
+      return token;
+    }
+
+    // otherwise, advance
+    str++;
+  }
+
+  // save state
+  *cache = str;
+
+  return token;
+}
+
 static char* strbtok_r(char* str, const char* delim, char** cache) {
   // handle null input
   if (str == NULL) {
@@ -185,6 +237,10 @@ static a32_parser_err_t a32_parser_next_binary(a32_parser_t* p, a32_parser_code_
 
         break;
       }
+      default: {
+        // unknown format character
+        return A32_PARSER_ERR_INVALID;
+      }
     }
   }
 
@@ -201,10 +257,10 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
   while (true) {
     // get first or next code token
     if (!p->init) {
-      code_token = strtok_r((char*)p->source, ";\n", &p->cache);
+      code_token = strctok_r((char*)p->source, &p->cache);
       p->init = true;
     } else {
-      code_token = strtok_r(NULL, ";\n", &p->cache);
+      code_token = strctok_r(NULL, &p->cache);
     }
 
     // handle end
@@ -239,7 +295,7 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
     // find def
     a32_parser_def_t* def = NULL;
     for (size_t i = 0; i < p->num_defs; i++) {
-      if (strcmp(p->defs[i].name, arg_token) == 0) {
+      if (p->defs[i].name != NULL && strcmp(p->defs[i].name, arg_token) == 0) {
         def = &p->defs[i];
       }
     }
@@ -300,7 +356,8 @@ static a32_parser_err_t a32_parser_next_string(a32_parser_t* p, a32_parser_code_
           c->args[i].s = arg_token;
           break;
         default:
-          break;
+          // unknown format character
+          return A32_PARSER_ERR_INVALID;
       }
     }
 
@@ -397,7 +454,11 @@ int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char
         // encode string
         if (args[i].s == NULL || strlen(args[i].s) == 0) {
           n = snprintf(buf + size, len - size, "``");
-        } else if (strchr(args[i].s, ' ') != NULL) {
+        } else if (strchr(args[i].s, '`') != NULL) {
+          // a tick cannot be represented, as it is the quoting character itself
+          return -1;
+        } else if (strpbrk(args[i].s, " \t\n\v\f\r;") != NULL) {
+          // quote strings that contain an argument or code separator
           n = snprintf(buf + size, len - size, "`%s`", args[i].s);
         } else {
           n = snprintf(buf + size, len - size, "%s", args[i].s);

@@ -329,6 +329,134 @@ TEST(Parser, BinaryUnterminatedString) {
   free(source);
 }
 
+// Encodes a two string code and reads it back with a string parser.
+static void assert_round_trip(const char* first, const char* second) {
+  a32_parser_arg_t args[] = {{.s = (char*)first}, {.s = (char*)second}};
+
+  char buf[128];
+  int n = a32_parser_encode_string(&defs[3], args, buf, sizeof(buf));
+  ASSERT_GT(n, 0) << "encoding [" << first << "] and [" << second << "]";
+  ASSERT_EQ((size_t)n, strlen(buf));
+
+  std::string source(buf);
+  A32_PARSER_MAKE_STRING(p, source.data(), defs);
+
+  a32_parser_code_t code;
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code)) << "parsing [" << buf << "]";
+  EXPECT_EQ(code.def, &defs[3]);
+  EXPECT_STREQ(first, code.args[0].s) << "parsing [" << buf << "]";
+  EXPECT_STREQ(second, code.args[1].s) << "parsing [" << buf << "]";
+  EXPECT_EQ(A32_PARSER_ERR_DONE, a32_parser_next(&p, &code));
+}
+
+// Regression: the encoder only quoted on spaces and the decoder split codes before it
+// honoured quoting, so an argument containing a separator was silently truncated.
+TEST(Parser, EncodeStringRoundTrip) {
+  assert_round_trip("foo", "bar");
+  assert_round_trip("", "");
+  assert_round_trip("", "bar");
+  assert_round_trip("foo", "");
+  assert_round_trip("foo bar", "baz");
+  assert_round_trip("foo", "bar baz");
+  assert_round_trip("a;b", "c");
+  assert_round_trip("a", "b;c");
+  assert_round_trip("a\nb", "c");
+  assert_round_trip("a", "b\nc");
+  assert_round_trip("a;b c\nd", "e f;g");
+  assert_round_trip(" ", "\t");
+  assert_round_trip("#hash", "not a comment");
+}
+
+// A tick is the quoting character itself and cannot be represented.
+TEST(Parser, EncodeStringRejectsTick) {
+  char buf[128];
+
+  a32_parser_arg_t args[] = {{.s = (char*)"a`b"}, {.s = (char*)"c"}};
+  EXPECT_EQ(-1, a32_parser_encode_string(&defs[3], args, buf, sizeof(buf)));
+
+  args[0].s = (char*)"a";
+  args[1].s = (char*)"`";
+  EXPECT_EQ(-1, a32_parser_encode_string(&defs[3], args, buf, sizeof(buf)));
+
+  // a tick free pair still encodes
+  args[1].s = (char*)"c";
+  EXPECT_EQ(7, a32_parser_encode_string(&defs[3], args, buf, sizeof(buf)));
+  EXPECT_STREQ("QUZ a c", buf);
+}
+
+// A quoted argument keeps separators, so the surrounding codes must still be found.
+TEST(Parser, StringQuotedSeparators) {
+  a32_parser_code_t code;
+  std::string source("BAR; QUZ `a;b` `c\nd` ;BAR");
+  A32_PARSER_MAKE_STRING(p, source.data(), defs);
+
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
+  EXPECT_EQ(code.def, &defs[1]);
+
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
+  EXPECT_EQ(code.def, &defs[3]);
+  EXPECT_STREQ("a;b", code.args[0].s);
+  EXPECT_STREQ("c\nd", code.args[1].s);
+
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
+  EXPECT_EQ(code.def, &defs[1]);
+
+  EXPECT_EQ(A32_PARSER_ERR_DONE, a32_parser_next(&p, &code));
+}
+
+// A comment runs to the end of the line and is not subject to quoting, so an odd number
+// of ticks in it must not swallow the codes that follow.
+TEST(Parser, StringCommentWithTick) {
+  a32_parser_code_t code;
+  std::string source("# a ` comment\nBAR\n  # another `\nBAR");
+  A32_PARSER_MAKE_STRING(p, source.data(), defs);
+
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
+  EXPECT_EQ(code.def, &defs[1]);
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
+  EXPECT_EQ(code.def, &defs[1]);
+  EXPECT_EQ(A32_PARSER_ERR_DONE, a32_parser_next(&p, &code));
+}
+
+// Regression: an unknown format character was silently skipped by both parsers while the
+// encoder rejected it.
+TEST(Parser, InvalidFormat) {
+  static a32_parser_def_t bad[] = {{.num = 9, .name = "BAD", .fmt = "x"}};
+
+  a32_parser_code_t code;
+
+  std::string source("BAD 1");
+  A32_PARSER_MAKE_STRING(sp, source.data(), bad);
+  EXPECT_EQ(A32_PARSER_ERR_INVALID, a32_parser_next(&sp, &code));
+
+  uint8_t binary[] = {9, 1};
+  A32_PARSER_MAKE_BINARY(bp, binary, sizeof(binary), bad);
+  EXPECT_EQ(A32_PARSER_ERR_INVALID, a32_parser_next(&bp, &code));
+
+  char buf[64];
+  a32_parser_arg_t args[] = {{.i = 1}};
+  EXPECT_EQ(-1, a32_parser_encode_string(&bad[0], args, buf, sizeof(buf)));
+}
+
+// Regression: a definition without a name was compared with strcmp by the string parser.
+TEST(Parser, StringNamelessDef) {
+  static a32_parser_def_t mixed[] = {
+      {.num = 1, .name = nullptr, .fmt = ""},
+      {.num = 2, .name = "OK", .fmt = ""},
+  };
+
+  a32_parser_code_t code;
+
+  std::string source("OK");
+  A32_PARSER_MAKE_STRING(p, source.data(), mixed);
+  ASSERT_EQ(A32_PARSER_ERR_OK, a32_parser_next(&p, &code));
+  EXPECT_EQ(code.def, &mixed[1]);
+
+  std::string other("NOPE");
+  A32_PARSER_MAKE_STRING(q, other.data(), mixed);
+  EXPECT_EQ(A32_PARSER_ERR_UNKNOWN, a32_parser_next(&q, &code));
+}
+
 // Regression: multi-byte values were read through misaligned pointer casts.
 TEST(Parser, BinaryUnalignedValues) {
   static a32_parser_def_t local[] = {{.num = 0, .name = "FOO", .fmt = "ifld"}};

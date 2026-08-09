@@ -49,6 +49,7 @@ typedef enum {
   A32_PARSER_ERR_UNKNOWN = -1,
   A32_PARSER_ERR_UNDERFLOW = -2,
   A32_PARSER_ERR_OVERFLOW = -3,
+  A32_PARSER_ERR_INVALID = -4,  // the definition uses an unknown format character
 } a32_parser_err_t;
 
 /**
@@ -62,6 +63,10 @@ typedef struct {
 
 /**
  * Constructs a parser that reads codes from a string.
+ *
+ * Codes are separated by semicolons and newlines, arguments by spaces, and a code that
+ * begins with a hash is a comment. An argument may be wrapped in ticks to contain spaces
+ * and separators, but never a tick itself. Definitions with a NULL name are skipped.
  *
  * Note: The parser will modify the passed string and parsed string arguments point into
  * it, therefore it must stay valid and unmodified for the lifetime of the parser.
@@ -102,6 +107,9 @@ a32_parser_t a32_parser_make_binary(uint8_t* source, size_t length, a32_parser_d
 /**
  * Will advance the parser to the next code and decode it.
  *
+ * Note: The parser must not be used after it returned an error, as it may have consumed
+ * part of the code that failed.
+ *
  * @param p The parser.
  * @param c The code.
  * @return Whether a code is available.
@@ -111,13 +119,17 @@ a32_parser_err_t a32_parser_next(a32_parser_t* p, a32_parser_code_t* c);
 /**
  * Will encode the specified code into a string.
  *
+ * String arguments that contain a separator are quoted with ticks, so that the result can
+ * be read back by a string parser. A string argument that contains a tick itself cannot
+ * be represented and is rejected.
+ *
  * @param def The definition.
  * @param args The arguments.
  * @param buf The buffer.
  * @param len The length of the buffer.
- * @return The number of bytes encoded or -1 if the buffer is too small or the definition
- *         is invalid (unknown format character or more than A32_PARSER_MAX_ARGS
- *         arguments).
+ * @return The number of bytes encoded or -1 if the buffer is too small, a string argument
+ *         contains a tick, or the definition is invalid (unknown format character or more
+ *         than A32_PARSER_MAX_ARGS arguments).
  */
 int a32_parser_encode_string(a32_parser_def_t* def, a32_parser_arg_t* args, char* buf, size_t len);
 
